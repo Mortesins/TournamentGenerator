@@ -1,0 +1,145 @@
+########################################################################
+# Software for collecting data from PV energy meters
+# Copyright (C) 2018 Axel Bernardinis <abernardinis@hotmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+########################################################################
+
+from itertools import product,combinations
+from math import ceil,log
+from string import ascii_uppercase
+from random import randint
+
+from .player import *
+from .raceCosts import *
+
+class Tournament():
+    'Tournament class, containing players and races'
+    def __init__(self, players):
+        self.players = players
+        self.races = []
+
+    @classmethod
+    def init_GeneratePlayers(cls, numberOfPlayers):
+        players = []
+        letters = list(ascii_uppercase)
+        # how many letters needed for the number of players
+            # 1 letter, 26 players, 2 letters 26*26 players
+            # take the logarithm base 26, and then get the nearest higher integer
+        numberOfLetters = int(ceil(log(numberOfPlayers,26)))
+        i = 0
+        # end when added numberOfPlayers
+        for nameTuple in product(letters,repeat=numberOfLetters):
+            # the name is ('A','A','A'), so I need to convert to string
+            name = ""
+            for j in range(0,numberOfLetters):
+                name = name + nameTuple[j]
+            if i < numberOfPlayers:
+                players.append(Player(name))
+                i += 1
+            else:
+                break
+        return cls(players)
+
+    def addRace(self,race):
+        # race must be a list or tuple of Player
+        if ( (isinstance(race,list) or isinstance(race,tuple)) and isinstance(race[0],Player) ):
+            self.races.append(race)
+            # increment number of races
+            for player in race:
+                player.addRace()
+            # add faced players
+            for comb in combinations(race,2):
+                # for every couple with players of the race, face each other
+                playersFaceEachOther(comb[0],comb[1])
+        else:
+            raise TypeError(race + " is not of type Player")
+        return
+    
+    def getPlayers(self):
+        return self.players
+        
+    def getRaces(self):
+        return self.races
+
+    def raceExists(self,race):
+        for r in self.races:
+            # check if every player of race is contained in r, if so raceExists
+            allRplayersInRace = True
+            i = 0
+            while (i < len(r)) and allRplayersInRace:
+                # if race does not contain player (r[i])
+                if not (r[i] in race):
+                    allRplayersInRace = False
+                i += 1
+            # if all players of r are in race, then this is the race, so raceExists
+            if allRplayersInRace:
+                return True
+        return False
+        
+    def playersSameNumberOfRaces(self):
+        ''' checks if all players of tournament have the same number of races '''
+        numberOfRaces = None
+        for player in self.players:
+            # first run, so I store the number of races of first player
+            if numberOfRaces == None:
+                numberOfRaces = player.getRaces()
+            else:
+                # check if current player has same number of races as the first
+                    # if one player does not have the same number of races as the first, 
+                    #   then all players can't have same number of races
+                if numberOfRaces != player.getRaces():
+                    return False
+        # if all players have same number of races as first player, 
+        # then everyone has same number of races
+        return True
+    
+    def somebodyDidNotFaceEveryone(self):
+        ''' checks if there is at least a player that hasn't faced every other player '''
+        for player in self.players:
+            # if player has at least a player not faced, then somebodyDidNotFaceEveryone (true)
+            if len(player.playersNotFaced(self.players)) != 0:
+                return True
+        # all players have playersNotFaced list empty, so everyone has faced everyone
+        return False
+
+    def getPlayerThatHasntFacedEveryone(self):
+        for player in self.players:
+            # if player has at least a player not faced, then return this player
+            if len(player.playersNotFaced(self.players)) != 0:
+                return player
+        # all players have playersNotFaced list empty, so everyone has faced everyone
+        return None
+
+    def getRandomPlayerThatHasntFacedEveryone(self):
+        p = []
+        for player in self.players:
+            # if player has at least a player not faced, then return this player
+            if len(player.playersNotFaced(self.players)) != 0:
+                p.append(player)
+        # random index of players that haven't faced everyone
+        if (len(p) != 0):
+            i = randint(0,len(p)-1) 
+            return p[i]
+        else:
+            return None
+
+    def averageNumberOfRaces(self):
+        mean = 0.0
+        for player in self.players:
+            mean += player.getRaces() 
+        return mean / len(self.players)
+
+    def costOfRace(self,race):
+        return costOfRace(race,self.averageNumberOfRaces())
