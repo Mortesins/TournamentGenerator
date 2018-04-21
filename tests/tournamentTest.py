@@ -351,3 +351,226 @@ class TournamentTest(unittest.TestCase):
         tournament.addRace([C,D,E])
         # should return None, since all players have faced each other
         self.assertEquals(tournament.getRandomPlayerThatHasntFacedEveryone(),None)
+
+    def test_addRaceResult(self):
+        # 5 players (ABCDE)
+        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        A = tournament.players[0]
+        B = tournament.players[1]
+        C = tournament.players[2]
+        D = tournament.players[3]
+        E = tournament.players[4]
+        tournament.addRaceResult(\
+            [\
+                (A,1,time(0,1,21,340000)),\
+                (B,4,time(0,1,22,450000)),\
+                (E,2,time(0,1,21,484000)),\
+                (D,3,time(0,1,23,000000))\
+            ]\
+        )
+            
+        self.assertEquals(\
+            tournament.getRaceResult(0),\
+            [\
+                (A,time(0,1,21,340000)),\
+                (E,time(0,1,21,484000)),\
+                (D,time(0,1,23,000000)),\
+                (B,time(0,1,22,450000))\
+            ]\
+        )
+        self.assertEquals(A.getFastestLap(),time(0,1,21,340000))
+        self.assertEquals(B.getFastestLap(),time(0,1,22,450000))
+        self.assertEquals(D.getFastestLap(),time(0,1,23,000000))
+        self.assertEquals(E.getFastestLap(),time(0,1,21,484000))
+        self.assertEquals(A.getPoints(),4)
+        self.assertEquals(B.getPoints(),1)
+        self.assertEquals(D.getPoints(),2)
+        self.assertEquals(E.getPoints(),3)
+
+        tournament.addRaceResult(\
+            [\
+                (A,2,time(0,1,21,300000)),\
+                (B,3,time(0,1,21,450000)),\
+                (C,1,time(0,1,20,984000)),\
+                (D,4,time(0,1,24,000000))\
+            ]\
+        )
+            
+        self.assertEquals(\
+            tournament.getRaceResult(1),\
+            [\
+                (C,time(0,1,20,984000)),\
+                (A,time(0,1,21,300000)),\
+                (B,time(0,1,21,450000)),\
+                (D,time(0,1,24,000000))\
+            ]\
+        )
+        self.assertEquals(A.getFastestLap(),time(0,1,21,300000))
+        self.assertEquals(B.getFastestLap(),time(0,1,21,450000))
+        self.assertEquals(C.getFastestLap(),time(0,1,20,984000))
+        self.assertEquals(D.getFastestLap(),time(0,1,23,000000))
+        self.assertEquals(E.getFastestLap(),time(0,1,21,484000))
+        self.assertEquals(A.getPoints(),7)
+        self.assertEquals(B.getPoints(),3)
+        self.assertEquals(C.getPoints(),4)
+        self.assertEquals(D.getPoints(),3)
+        self.assertEquals(E.getPoints(),3)
+
+### HELPER FUNCTION ###
+    def generateRaceResult1(self,tournament):
+        A = tournament.players[0]
+        B = tournament.players[1]
+        C = tournament.players[2]
+        D = tournament.players[3]
+        E = tournament.players[4]
+        tournament.addRaceResult(\
+            [\
+                (A,1,time(0,1,21,340000)),\
+                (B,4,time(0,1,22,450000)),\
+                (E,2,time(0,1,21,484000)),\
+                (D,3,time(0,1,23,000000))\
+            ]\
+        )
+        return tournament
+
+    def generateRaceResult2(self,tournament):
+        A = tournament.players[0]
+        B = tournament.players[1]
+        C = tournament.players[2]
+        D = tournament.players[3]
+        E = tournament.players[4]
+        tournament.addRaceResult(\
+            [\
+                (A,2,time(0,1,21,300000)),\
+                (B,3,time(0,1,21,450000)),\
+                (C,1,time(0,1,20,984000)),\
+                (D,4,time(0,1,24,000000))\
+            ]\
+        )
+
+    def generateRaceResult3(self,tournament):
+        A = tournament.players[0]
+        B = tournament.players[1]
+        C = tournament.players[2]
+        D = tournament.players[3]
+        E = tournament.players[4]
+        tournament.addRaceResult(\
+            [\
+                (C,1,time(0,1,25,300000)),\
+                (B,3,time(0,1,25,450000)),\
+                (D,2,time(0,1,25,984000)),\
+                (E,4,time(0,1,25,000000))\
+            ]\
+        )
+
+    def test_getFastestLapTime(self):
+        # 5 players (ABCDE)
+        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        self.generateRaceResult1(tournament)
+        self.assertEquals(tournament.getFastestLapTime(),time(0,1,21,340000))
+        self.generateRaceResult2(tournament)
+        self.assertEquals(tournament.getFastestLapTime(),time(0,1,20,984000))
+
+    def test_getFastestLapPlayer(self):
+        # 5 players (ABCDE)
+        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        self.generateRaceResult1(tournament)
+        A = tournament.players[0]
+        B = tournament.players[1]
+        C = tournament.players[2]
+        D = tournament.players[3]
+        E = tournament.players[4]
+        self.assertEquals(tournament.getFastestLapPlayer(),A)
+        self.generateRaceResult2(tournament)
+        self.assertEquals(tournament.getFastestLapPlayer(),C)
+
+    def test_getFastestLapStanding(self):
+        # 5 players (ABCDE)
+        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        self.generateRaceResult1(tournament)
+        A = tournament.players[0]
+        B = tournament.players[1]
+        C = tournament.players[2]
+        D = tournament.players[3]
+        E = tournament.players[4]
+        self.assertEquals(tournament.getFastestLapStanding(),[A,E,B,D])
+        self.generateRaceResult2(tournament)
+        self.assertEquals(tournament.getFastestLapStanding(),[C,A,B,E,D])
+
+    def test_getStandings(self):
+        # 5 players (ABCDE)
+        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        self.generateRaceResult1(tournament)
+        A = tournament.players[0]
+        B = tournament.players[1]
+        C = tournament.players[2]
+        D = tournament.players[3]
+        E = tournament.players[4]
+        self.assertEquals(tournament.getStandings(),[A,E,D,B,C])
+        self.generateRaceResult2(tournament)
+        self.generateRaceResult3(tournament)
+        self.assertEquals(tournament.getStandings(),[C,A,D,B,E])
+
+    def test_getFastestLapStandingPrintable(self):
+        # 5 players (ABCDE)
+        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        self.generateRaceResult1(tournament)
+        A = tournament.players[0]
+        B = tournament.players[1]
+        C = tournament.players[2]
+        D = tournament.players[3]
+        E = tournament.players[4]
+        self.assertEquals(\
+            tournament.getFastestLapStandingPrintable(),\
+            [\
+                ("A","1:21:340"),\
+                ("E","1:21:484"),\
+                ("B","1:22:450"),\
+                ("D","1:23:000")\
+            ]\
+        )
+                
+        self.generateRaceResult2(tournament)
+        self.generateRaceResult3(tournament)
+        self.assertEquals(\
+            tournament.getFastestLapStandingPrintable(),\
+            [\
+                ("C","1:20:984"),\
+                ("A","1:21:300"),\
+                ("B","1:21:450"),\
+                ("E","1:21:484"),\
+                ("D","1:23:000")\
+            ]\
+        )
+    
+    def test_getStandingsPrintable(self):
+        # 5 players (ABCDE)
+        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        self.generateRaceResult1(tournament)
+        A = tournament.players[0]
+        B = tournament.players[1]
+        C = tournament.players[2]
+        D = tournament.players[3]
+        E = tournament.players[4]
+        self.assertEquals(\
+            tournament.getStandingsPrintable(),\
+            [\
+                ("A",1,4),\
+                ("E",1,3),\
+                ("D",1,2),\
+                ("B",1,1),\
+                ("C",0,0)\
+            ]\
+        )
+        self.generateRaceResult2(tournament)
+        self.generateRaceResult3(tournament)
+        self.assertEquals(\
+            tournament.getStandingsPrintable(),\
+            [\
+                ("C",2,8),\
+                ("A",2,7),\
+                ("D",3,6),\
+                ("B",3,5),\
+                ("E",2,4)\
+            ]\
+        )

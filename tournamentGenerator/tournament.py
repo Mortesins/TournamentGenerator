@@ -20,18 +20,28 @@ from itertools import product,combinations
 from math import ceil,log
 from string import ascii_uppercase
 from random import randint
+from datetime import time
 
 from .player import *
 from .raceCosts import *
 
 class Tournament():
     'Tournament class, containing players and races'
-    def __init__(self, players):
+    def __init__(self, players, points=()):
         self.players = players
+        # contains tuple with points assigned for each position
+        self.points = points
+        # races, which are lists of players in the race
         self.races = []
+        # race results which are arrays of (player, time) tuples in the order of arrival
+        self.raceResults = []
+        # list of players in the order based on points
+        self.standings = list(players)
+        # list of players in the order based on fastest lap
+        self.standingsFastestLap = []
 
     @classmethod
-    def init_GeneratePlayers(cls, numberOfPlayers):
+    def init_GeneratePlayers(cls, numberOfPlayers, points=()):
         players = []
         letters = list(ascii_uppercase)
         # how many letters needed for the number of players
@@ -50,7 +60,7 @@ class Tournament():
                 i += 1
             else:
                 break
-        return cls(players)
+        return cls(players,points)
 
     def addRace(self,race):
         # race must be a list or tuple of Player
@@ -72,6 +82,12 @@ class Tournament():
         
     def getRaces(self):
         return self.races
+
+    def getRaceResults(self):
+        return self.raceResults
+
+    def getRaceResult(self,index):
+        return self.raceResults[index]
 
     def raceExists(self,race):
         for r in self.races:
@@ -143,3 +159,102 @@ class Tournament():
 
     def costOfRace(self,race):
         return costOfRace(race,self.averageNumberOfRaces())
+
+    def addRaceResult(self,resultsTuples):
+        ''' 
+            resultsTuples is a list of tuple of type (player,position,time)
+            the race result is added as tuple (player,time) in order of arrival
+            for each player
+                give points
+                set fastest time
+                add races done
+        '''
+        # creates race result
+        raceResult = []
+        # sort race results by position
+        resultsTuples.sort(key=lambda resultsTuple : resultsTuple[1])
+        i = 0
+        for resultsTuple in resultsTuples:
+          # give points to each player
+            # if there are point for that position
+            try:
+                resultsTuple[0].addPoints(self.points[i])
+            except IndexError:
+                # there are no points for ith position
+                pass
+            i += 1
+          # set fastest lap time of each player
+            # if player has not fastest time
+            # or fastest time of this race better than previous fastest time
+            if ( (resultsTuple[0].getFastestLap() == None) or (resultsTuple[2] < resultsTuple[0].getFastestLap()) ): 
+                resultsTuple[0].setFastestLap(resultsTuple[2])
+          # add race done
+            resultsTuple[0].addRaceDone()
+          # append (player,time)
+            raceResult.append((resultsTuple[0],resultsTuple[2]))
+        self.raceResults.append(raceResult)
+
+    def _calculateStandingsFastestLap(self):
+        ''' calculates and stores players ordered by fastest lap '''
+        # if standingsFastestLap does not contain all players
+            # copy players to standingsFastestLap
+            # remove players without fastestLap
+        # sort standingsFastestLap
+        if (len(self.standingsFastestLap) != len(self.players)):
+            self.standingsFastestLap = list(self.players)
+            i = 0
+            while i < len(self.standingsFastestLap):
+                if (self.standingsFastestLap[i].getFastestLap() == None):
+                    self.standingsFastestLap.pop(i)
+                else:
+                    i += 1
+        self.standingsFastestLap.sort(key=lambda player : player.getFastestLap())
+
+    def _calculateStandings(self):
+        ''' calculates and stores players ordered by points '''
+        self.standings.sort(key=lambda player : player.getPoints(),reverse=True)
+
+    def getFastestLapTime(self):
+        self._calculateStandingsFastestLap()
+        return self.standingsFastestLap[0].getFastestLap()
+
+    def getFastestLapPlayer(self):
+        self._calculateStandingsFastestLap()
+        return self.standingsFastestLap[0]
+
+    def getFastestLapStanding(self):
+        ''' returns [ player, ... ] ordered by fastest lap '''
+        self._calculateStandingsFastestLap()
+        return self.standingsFastestLap
+
+    def getFastestLapStandingPrintable(self):
+        ''' returns [ (player name, time), ... ] rdered by fastest lap '''
+        self._calculateStandingsFastestLap()
+        result = []
+        for player in self.standingsFastestLap:
+            result.append(\
+                (\
+                    player.getName(),\
+                    player.getFastestLap().strftime('%M:%S:%f')[1:-3]\
+                )\
+            )
+        return result
+
+    def getStandings(self):
+        ''' returns [ player, ... ] ordered by points '''
+        self._calculateStandings()
+        return self.standings
+
+    def getStandingsPrintable(self):
+        ''' returns [ (player name, number of races, points), ... ] ordered by points '''
+        self._calculateStandings()
+        result = []
+        for player in self.standings:
+            result.append(\
+                (\
+                    player.getName(),\
+                    player.getRacesDone(),\
+                    player.getPoints()\
+                )\
+            )
+        return result

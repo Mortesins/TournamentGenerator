@@ -17,12 +17,16 @@
 ########################################################################
 
 from random import randint
+from datetime import time
 
 class Player():
     'Player class'
     def __init__(self, name):
         self.name = name
         self.races = 0
+        self.racesDone = 0
+        self.points = 0
+        self.fastestLap = None
         self.facedPlayers = []
 
     def __repr__(self):
@@ -47,6 +51,30 @@ class Player():
 
     def getName(self):
         return self.name
+
+    def addRaceDone(self):
+        self.racesDone += 1
+        return
+
+    def addPoints(self,points):
+        if (points >= 0):
+            self.points += points
+
+    def setFastestLap(self, fastestLap):
+        # check fastestLap of type datetime.time
+        if type(fastestLap) is time:
+            self.fastestLap = fastestLap
+
+    def getRacesDone(self):
+        return self.racesDone
+
+    def getPoints(self):
+        return self.points
+
+    def getFastestLap(self):
+        return self.fastestLap
+
+
 
     def hasFaced(self, player):
         for p in self.facedPlayers:
