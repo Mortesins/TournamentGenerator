@@ -28,23 +28,23 @@ class TournamentGenerator():
         self.tournament = tournament
         self.numberOfPlayers = numberOfPlayers
         self.playersPerRace = playersPerRace
-        self.printRaces = printRaces
+        self.printRacesFlag = printRaces
 
     @classmethod
-    def init_GenerateTournament(cls, numberOfPlayers, playersPerRace, printRaces = False):
-        tournament = Tournament.init_GeneratePlayers(numberOfPlayers)
+    def init_GenerateTournament(cls, numberOfPlayers, playersPerRace, printRaces = False, points = ()):
+        tournament = Tournament.init_GeneratePlayers(numberOfPlayers,points)
         return cls(tournament,numberOfPlayers,playersPerRace,printRaces)
     
     @classmethod
-    def init_fromFile(cls, playersPerRace, filename, printRaces = False):
+    def init_fromFile(cls, playersPerRace, filename, printRaces = False, points = ()):
         players = []
         fp = open(filename)
         for line in fp:
             players.append(Player(line[:-1]))
-        return cls(Tournament(players), len(players), playersPerRace, printRaces)
+        return cls(Tournament(players,points), len(players), playersPerRace, printRaces, points)
 
     def printRace(self,race):
-        if self.printRaces:
+        if self.printRacesFlag:
             print(race)
 
     def generate_randomLowCost(self):
@@ -143,31 +143,41 @@ class TournamentGenerator():
         self.generate_AllPlayersFaceEachOther()
         self.generate_AllPlayersSameNumberOfRaces()
 
-    def printTournament(self):
+    def printRaces(self):
         i = 1
         for race in self.tournament.getRaces():
-            print(i, race)
+            if (i < 10):
+                print(" " + str(i) + ".", race)
+            else:
+                print(str(i) + ".", race)
             i+=1
     
     def printNumberOfRacesOfEachPlayer(self):
         players = self.tournament.getPlayers()
         players.sort(key=lambda player : player.getName())
         for player in players:
-            print(str(player) + ":" + str(player.getRaces()))
-        
+            self.printPlayerNumberOfRaces(player)
+            #print(str(player) + ":" + str(player.getRaces()))
+
+    def printPlayerNumberOfRaces(self,player):
+        print(str(player) + ":" + str(player.getRaces()))
+
     def printPlayersFacedByEachPlayer(self):
         players = self.tournament.getPlayers()
         players.sort(key=lambda player : player.getName())
         for player in players:
-            stringFacedPlayers = "["
-            facedPlayers = player.getFacedPlayers()
-            facedPlayers.sort(key=lambda player : player.getName())
-            for facedPlayer in facedPlayers:
-                stringFacedPlayers += ( str(facedPlayer) + "," )
-            # eliminate last comma
-            stringFacedPlayers = stringFacedPlayers[:-1]
-            stringFacedPlayers += "]"
-            print(str(player) + ":" + stringFacedPlayers)
+            self.printPlayerPlayersFaced(player)
+
+    def printPlayerPlayersFaced(self,player):
+        stringFacedPlayers = "["
+        facedPlayers = player.getFacedPlayers()
+        facedPlayers.sort(key=lambda player : player.getName())
+        for facedPlayer in facedPlayers:
+            stringFacedPlayers += ( str(facedPlayer) + "," )
+        # eliminate last comma
+        stringFacedPlayers = stringFacedPlayers[:-1]
+        stringFacedPlayers += "]"
+        print(str(player) + ":" + stringFacedPlayers)
 
 def removeList2fromList1(a,b):
     for item in b:

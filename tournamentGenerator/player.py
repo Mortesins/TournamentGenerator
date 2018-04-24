@@ -74,6 +74,10 @@ class Player():
     def getFastestLap(self):
         return self.fastestLap
 
+    def getFastestLapPrintable(self):
+        if self.fastestLap == None:
+            return "None"
+        return self.fastestLap.strftime('%M:%S:%f')[1:-3]
 
 
     def hasFaced(self, player):

@@ -44,6 +44,6 @@ if __name__ == '__main__':
         tournament = TournamentGenerator.init_GenerateTournament(numberOfPlayers,playersPerRace,False)
     
     tournament.generate2()
-    tournament.printTournament()
+    tournament.printRaces()
     tournament.printNumberOfRacesOfEachPlayer()
     tournament.printPlayersFacedByEachPlayer()

@@ -431,7 +431,7 @@ class TournamentTest(unittest.TestCase):
                 (D,3,time(0,1,23,000000))\
             ]\
         )
-        return tournament
+        return
 
     def generateRaceResult2(self,tournament):
         A = tournament.players[0]

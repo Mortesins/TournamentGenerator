@@ -78,13 +78,13 @@ class Tournament():
         return
     
     def getPlayers(self):
-        return self.players
+        return list(self.players)
         
     def getRaces(self):
-        return self.races
+        return list(self.races)
 
     def getRaceResults(self):
-        return self.raceResults
+        return list(self.raceResults)
 
     def getRaceResult(self,index):
         return self.raceResults[index]
@@ -235,7 +235,7 @@ class Tournament():
             result.append(\
                 (\
                     player.getName(),\
-                    player.getFastestLap().strftime('%M:%S:%f')[1:-3]\
+                    player.getFastestLapPrintable()\
                 )\
             )
         return result
