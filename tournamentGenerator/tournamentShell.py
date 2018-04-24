@@ -18,16 +18,81 @@
 
 from __future__ import print_function
 import os.path
+from cmd import Cmd
 
 from .tournamentGenerator import *
 
-class TournamentShell():
+class TournamentShell(Cmd):
     'Class for tournament shell interfacet'
     def __init__(self):
+        Cmd.__init__(self)
         self._tournamentGenerator = None
         self._numberOfPlayers = None
         self._playersPerRace = None
         self._playerListFilename = None
+
+### CMD commands ###
+    # exit function
+    def do_quit(self,s):
+        exit()
+    def do_exit(self,s):
+        exit()
+    def do_q(self,s):
+        exit()
+    def help_quit(self):
+        print("Quits the program")
+    def help_exit(self):
+        print("Quits the program")
+    def help_q(self):
+        print("Quits the program")
+    
+    # hello function
+    def do_hello(self,s):
+        print("Hello " + s)
+    # hello documentation
+    def help_hello(self):
+        print("Greets the person with the name passed as parameter")
+    # hello autocomplete
+    def complete_hello(self, text, line, begidx, endidx):
+        return [i for i in ['Axel','axel','andrea'] if i.startswith(text)]
+  ### GETTERS AND SETTERS ###
+    def do_setNumberOfPlayers(self,s):
+        p = s.split()
+        try:
+            n = int(p[0])
+            self._numberOfPlayers = n
+        except ValueError:
+            print("Error: argument is not a number")
+    def help_setNumberOfPlayers(self):
+        print("Sets the number of players of the tournament needed for generation without file with player names")
+    def do_setPlayersPerRace(self,s):
+        p = s.split()
+        try:
+            n = int(p[0])
+            self._playersPerRace = n
+        except ValueError:
+            print("Error: argument is not a number")
+    def help_setPlayersPerRace(self):
+        print("Sets the number of players that participate in each race")
+    def do_setPlayerListFilename(self,s):
+        p = s.split()
+        self._playerListFilename = p[0]
+    def help_setPlayerListFilename(self):
+        print("Sets the path of the file containing the players names.\
+                Each player name has to be on a new line.\
+                The number of players will be the equal to the number of names in the file")
+    def do_printNumberOfPlayers(self,s):
+        n = str(self._numberOfPlayers)
+        print("Number of players: " + n + " (only valid for generation of tournament without player names)")
+    def do_printPlayersPerRace(self,s):
+        n = str(self._playersPerRace)
+        print("Players per race: " + n)
+    def do_printPlayerListFilename(self,s):
+        filename = str(self._playerListFilename)
+        print("Player names list file: " + filename)
+  ###########################
+
+####################
 
     @property
     def numberOfPlayers(self):
