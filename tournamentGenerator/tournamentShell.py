@@ -218,21 +218,3 @@ class TournamentShell():
         print("POINTS:")
         print(player.getName() + ": " + str(player.getPoints()))
 #######################
-
-    def generateRaceResult1(self):
-        tournament = self._tournamentGenerator.tournament
-        A = tournament.players[0]
-        B = tournament.players[1]
-        C = tournament.players[2]
-        D = tournament.players[3]
-        E = tournament.players[4]
-        tournament.addRaceResult(\
-            [\
-                (A,1,time(0,1,21,340000)),\
-                (B,4,time(0,1,22,450000)),\
-                (E,2,time(0,1,21,484000)),\
-                (D,3,time(0,1,23,000000))\
-            ]\
-        )
-        print("POINTS: " + str(A.getPoints()))
-        return
