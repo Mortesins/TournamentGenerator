@@ -278,12 +278,10 @@ class TournamentShell(Cmd):
             self._tournamentGenerator.printPlayersFacedByEachPlayer()
             
     def playRace(self,raceNumber):
-        if ( (raceNumber < 1) and (raceNumber > len(self._tournamentGenerator.tournament.getRaces())) ):
+        if ( (raceNumber < 1) and (raceNumber > len(self._tournamentGenerator.tournament.getRacesToDo())) ):
             return False
         i = raceNumber - 1
-        race = self._tournamentGenerator.tournament.getRace(i)
-        if race not in self._tournamentGenerator.tournament.getRacesToDo():
-            return False
+        race = self._tournamentGenerator.tournament.getRaceToDo(i)
         raceResult = []
         for player in race:
             print(player.getName() + ": ")
