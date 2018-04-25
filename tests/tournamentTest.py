@@ -382,7 +382,7 @@ class TournamentTest(unittest.TestCase):
         self.assertEqual(B.getFastestLap(),time(0,1,22,450000))
         self.assertEqual(D.getFastestLap(),time(0,1,23,000000))
         self.assertEqual(E.getFastestLap(),time(0,1,21,484000))
-        self.assertEqual(A.getPoints(),4)
+        self.assertEqual(A.getPoints(),5) # +1 for fastest lap
         self.assertEqual(B.getPoints(),1)
         self.assertEqual(D.getPoints(),2)
         self.assertEqual(E.getPoints(),3)
@@ -410,9 +410,9 @@ class TournamentTest(unittest.TestCase):
         self.assertEqual(C.getFastestLap(),time(0,1,20,984000))
         self.assertEqual(D.getFastestLap(),time(0,1,23,000000))
         self.assertEqual(E.getFastestLap(),time(0,1,21,484000))
-        self.assertEqual(A.getPoints(),7)
+        self.assertEqual(A.getPoints(),8)
         self.assertEqual(B.getPoints(),3)
-        self.assertEqual(C.getPoints(),4)
+        self.assertEqual(C.getPoints(),5) # +1 for fastest lap
         self.assertEqual(D.getPoints(),3)
         self.assertEqual(E.getPoints(),3)
 
@@ -459,7 +459,7 @@ class TournamentTest(unittest.TestCase):
                 (C,1,time(0,1,25,300000)),\
                 (B,3,time(0,1,25,450000)),\
                 (D,2,time(0,1,25,984000)),\
-                (E,4,time(0,1,25,000000))\
+                (E,4,time(0,1,26,000000))\
             ]\
         )
 
@@ -555,7 +555,7 @@ class TournamentTest(unittest.TestCase):
         self.assertEqual(\
             tournament.getStandingsPrintable(),\
             [\
-                ("A",1,4),\
+                ("A",1,5),\
                 ("E",1,3),\
                 ("D",1,2),\
                 ("B",1,1),\
@@ -567,8 +567,8 @@ class TournamentTest(unittest.TestCase):
         self.assertEqual(\
             tournament.getStandingsPrintable(),\
             [\
-                ("C",2,8),\
-                ("A",2,7),\
+                ("C",2,10),\
+                ("A",2,8),\
                 ("D",3,6),\
                 ("B",3,5),\
                 ("E",2,4)\

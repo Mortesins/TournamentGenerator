@@ -28,10 +28,12 @@ from .helper import removeList2fromList1, convertRaceResultToRace, sameRace
 
 class Tournament():
     'Tournament class, containing players and races'
-    def __init__(self, players, points=()):
+    def __init__(self, players, points=(), pointsFastestLap=1):
         self.players = players
         # contains tuple with points assigned for each position
         self.points = points
+        # points assigned for fastest lap of race
+        self.pointsFastestLap = pointsFastestLap
         # races, which are lists of players in the race
         self.races = []
         # race results which are arrays of (player, time) tuples in the order of arrival
@@ -44,7 +46,7 @@ class Tournament():
         self.standingsFastestLap = []
 
     @classmethod
-    def init_GeneratePlayers(cls, numberOfPlayers, points=()):
+    def init_GeneratePlayers(cls, numberOfPlayers, points=(), pointsFastestLap=1):
         players = []
         letters = list(ascii_uppercase)
         # how many letters needed for the number of players
@@ -63,7 +65,7 @@ class Tournament():
                 i += 1
             else:
                 break
-        return cls(players,points)
+        return cls(players,points,pointsFastestLap)
 
     def addRace(self,race):
         # race must be a list or tuple of Player
@@ -96,7 +98,15 @@ class Tournament():
         return list(self.raceResults)
 
     def getRaceResult(self,index):
-        return self.raceResults[index]
+        return list(self.raceResults[index])
+
+    def getRacesToDo(self):
+        self._calculateRacesToDo()
+        return list(self.racesToDo)
+
+    def getRaceToDo(self,index):
+        self._calculateRacesToDo()
+        return list(self.racesToDo[index])
 
     def raceExists(self,race):
         for r in self.races:
@@ -177,6 +187,7 @@ class Tournament():
                 give points
                 set fastest time
                 add races done
+            give point for fastest lap
         '''
         # creates race result
         raceResult = []
@@ -202,6 +213,9 @@ class Tournament():
           # append (player,time)
             raceResult.append((resultsTuple[0],resultsTuple[2]))
         self.raceResults.append(raceResult)
+        # sort race results by fastest lap time, and give player points for fastestLap
+        resultsTuples.sort(key=lambda resultsTuple : resultsTuple[2])
+        resultsTuples[0][0].addPoints(self.pointsFastestLap)
 
     def _calculateStandingsFastestLap(self):
         ''' calculates and stores players ordered by fastest lap '''
@@ -273,10 +287,6 @@ class Tournament():
                 )\
             )
         return result
-
-    def getRacesToDo(self):
-        self._calculateRacesToDo()
-        return list(self.racesToDo)
 
     def _calculateRacesToDo(self):
         if self.racesToDo == []:
