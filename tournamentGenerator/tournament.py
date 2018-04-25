@@ -24,6 +24,7 @@ from datetime import time
 
 from .player import *
 from .raceCosts import *
+from .helper import removeList2fromList1, convertRaceResultToRace, sameRace
 
 class Tournament():
     'Tournament class, containing players and races'
@@ -35,6 +36,8 @@ class Tournament():
         self.races = []
         # race results which are arrays of (player, time) tuples in the order of arrival
         self.raceResults = []
+        # races to do (not played yet)
+        self.racesToDo = []
         # list of players in the order based on points
         self.standings = list(players)
         # list of players in the order based on fastest lap
@@ -82,6 +85,9 @@ class Tournament():
         
     def getRaces(self):
         return list(self.races)
+
+    def getRace(self,index):
+        return list(self.races[index])
 
     def getRaceResults(self):
         return list(self.raceResults)
@@ -225,7 +231,7 @@ class Tournament():
     def getFastestLapStanding(self):
         ''' returns [ player, ... ] ordered by fastest lap '''
         self._calculateStandingsFastestLap()
-        return self.standingsFastestLap
+        return list(self.standingsFastestLap)
 
     def getFastestLapStandingPrintable(self):
         ''' returns [ (player name, time), ... ] rdered by fastest lap '''
@@ -243,7 +249,7 @@ class Tournament():
     def getStandings(self):
         ''' returns [ player, ... ] ordered by points '''
         self._calculateStandings()
-        return self.standings
+        return list(self.standings)
 
     def getStandingsPrintable(self):
         ''' returns [ (player name, number of races, points), ... ] ordered by points '''
@@ -258,3 +264,23 @@ class Tournament():
                 )\
             )
         return result
+
+    def getRacesToDo(self):
+        self._calculateRacesToDo()
+        return list(self.racesToDo)
+
+    def _calculateRacesToDo(self):
+        if self.racesToDo == []:
+            # all races, then I remove the ones already done
+            self.racesToDo = list(self.races)
+        # temporarily store races which will be removed at the end
+        racesToRemove = []
+        # for each race to do check if present in race results, if so remove it
+        for race in self.racesToDo:
+            for raceResultTmp in self.raceResults:
+                raceResult = convertRaceResultToRace(raceResultTmp)
+                # if raceResult is the same as race, then this race is already done
+                    # so I remove it from racesToDo
+                if sameRace(raceResult,race):
+                    racesToRemove.append(race)
+        removeList2fromList1(self.racesToDo,racesToRemove)

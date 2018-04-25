@@ -21,6 +21,7 @@ import sys
 
 from .tournament import *
 from .raceCosts import *
+from .helper import removeList2fromList1, printRaces
 
 class TournamentGenerator():
     'Tournament generator class, containing tournament'
@@ -144,14 +145,8 @@ class TournamentGenerator():
         self.generate_AllPlayersSameNumberOfRaces()
 
     def printRaces(self):
-        i = 1
-        for race in self.tournament.getRaces():
-            if (i < 10):
-                print(" " + str(i) + ".", race)
-            else:
-                print(str(i) + ".", race)
-            i+=1
-    
+        printRaces(self.tournament.getRaces())
+
     def printNumberOfRacesOfEachPlayer(self):
         players = self.tournament.getPlayers()
         players.sort(key=lambda player : player.getName())
@@ -178,11 +173,3 @@ class TournamentGenerator():
         stringFacedPlayers = stringFacedPlayers[:-1]
         stringFacedPlayers += "]"
         print(str(player) + ":" + stringFacedPlayers)
-
-def removeList2fromList1(a,b):
-    for item in b:
-        try:
-            a.remove(item)
-        except ValueError:
-            None
-    return

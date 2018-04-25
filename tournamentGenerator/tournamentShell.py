@@ -21,15 +21,22 @@ import os.path
 from cmd import Cmd
 
 from .tournamentGenerator import *
+from .helper import printRaces, convertRaceResultToRace, convertRaceResultsToRaces, sameRace
 
 class TournamentShell(Cmd):
     'Class for tournament shell interfacet'
     def __init__(self):
         Cmd.__init__(self)
         self._tournamentGenerator = None
+        # number of players of the tournament needed for generation without file with player names
         self._numberOfPlayers = None
+        # number of players that participate in each race
         self._playersPerRace = None
+        # filename containing the players name
         self._playerListFilename = None
+        # a tuple containing the points received based on placement
+            # (4,3,2,1)
+        self._points = None
 
 ### CMD commands ###
     # exit function
@@ -55,6 +62,50 @@ class TournamentShell(Cmd):
     # hello autocomplete
     def complete_hello(self, text, line, begidx, endidx):
         return [i for i in ['Axel','axel','andrea'] if i.startswith(text)]
+    
+    ### generate tournament ###
+    def do_generateTournament(self,s):
+        # if no parameters
+        if (s == ""):
+            self.generateTournament()
+        else:
+            # default no verbose no print races
+            v = False
+            p = False
+            # parameters
+            p = s.split
+            if "-v" in p:
+                v = True
+            if "--printRacesOnGenerate" in p:
+                p = True
+            self.generateTournament(v,p)
+
+    def help_playRace(self,s):
+        print("USAGE: generateTournament [OPTIONS]")
+        print("OPTIONS:")
+        print("\t -v                     : verbose, prints data to check the correctness of tournament")
+        print("\t --printRacesOnGenerate : prints the races as they are generated")
+        print("Generates the tournament. NOTE: the following must be set beforehand:")
+        print("\t numberOfPlayers or playerListFilename")
+        print("\t points")
+        print("\t playersPerRace")
+    ### play a race ###
+    def do_playRace(self,s):
+        if (s == ""):
+            self.printRacesToDo()
+            raceNumber = int(input("Number of race to be played: "))
+        else:
+            p = s.split()
+            raceNumber = int(p[0])
+        self.playRace(raceNumber)
+
+    def help_playRace(self,s):
+        print("USAGE: playRace RACENUMBER.")
+        print("Adds the result (including fastest time) of the race specified with the number.")
+
+    def complete_playRace(self, text, line, begidx, endidx):
+        self.printRacesToDo()
+        return []
   ### GETTERS AND SETTERS ###
     def do_setNumberOfPlayers(self,s):
         p = s.split()
@@ -81,6 +132,16 @@ class TournamentShell(Cmd):
         print("Sets the path of the file containing the players names.\
                 Each player name has to be on a new line.\
                 The number of players will be the equal to the number of names in the file")
+    def do_setPoints(self,s):
+        p = s.split()
+        self._points = p[0]
+    def help_setPoints(self):
+        print("USAGE: setPoints POINTS_TUPLE.")
+        print("EXAMPLE: setPoints (4,3,2,1)")
+        print("\t would give 4 points to the first, 3 to the second, 2 to the third and 1 to the last")
+        print("Sets the points awarded in each race.")
+  ###########################
+  ### PRINT FUNCTIONS ###
     def do_printNumberOfPlayers(self,s):
         n = str(self._numberOfPlayers)
         print("Number of players: " + n + " (only valid for generation of tournament without player names)")
@@ -90,7 +151,7 @@ class TournamentShell(Cmd):
     def do_printPlayerListFilename(self,s):
         filename = str(self._playerListFilename)
         print("Player names list file: " + filename)
-  ###########################
+  #######################
 
 ####################
 
@@ -125,15 +186,26 @@ class TournamentShell(Cmd):
         else:
             raise ValueError("Player list file name must be a string")
     
-    def generateTournament(self,points=(),verbose=False,printRacesOnGenerate=False):
+    @property
+    def points(self):
+        return self._points
+
+    @points.setter
+    def points(self, value):
+        if type(value) is tuple:
+            self._points = value
+        else:
+            raise ValueError("Points must be a tuple like (4,3,2,1)")
+    
+    def generateTournament(self,verbose=False,printRacesOnGenerate=False):
         if (self._playersPerRace == None):
             raise ValueError("Players per race must be defined")
         else:
             if (self._playerListFilename != None):
                 if os.path.isfile(self._playerListFilename)  : 
-                    self._tournamentGenerator = TournamentGenerator.init_fromFile(self._playersPerRace,self._playerListFilename,printRacesOnGenerate,points)
+                    self._tournamentGenerator = TournamentGenerator.init_fromFile(self._playersPerRace,self._playerListFilename,printRacesOnGenerate,self._points)
             elif (self._numberOfPlayers  != None):
-                self._tournamentGenerator = TournamentGenerator.init_GenerateTournament(self._numberOfPlayers,self._playersPerRace,printRacesOnGenerate,points)
+                self._tournamentGenerator = TournamentGenerator.init_GenerateTournament(self._numberOfPlayers,self._playersPerRace,printRacesOnGenerate,self._points)
             else:
                 raise ValueError("Either players list filename or number of players must be defined")
         self._tournamentGenerator.generate2()
@@ -142,12 +214,32 @@ class TournamentShell(Cmd):
             self._tournamentGenerator.printNumberOfRacesOfEachPlayer()
             self._tournamentGenerator.printPlayersFacedByEachPlayer()
             
-            
+    def playRace(self,raceNumber):
+        if (raceNumber < 1 and raceNumber > len(self._tournamentGenerator.tournament.getRaces()):
+            return False
+        i = raceNumber - 1
+        race = self._tournamentGenerator.tournament.getRace(i)
+        if race not in self._tournamentGenerator.tournament.getRacesToDo():
+            return False
+        for player in race:
+            print(player.getName() + ": ")
+            position = int(input("\tPosition: "))
+            fastestLapString = raw_input("\tFastest Lap Time: ")
+            splitted = fastestLapString.split(":")
+            fastestLap = time(0,splitted[0],splitted[1],splitted[2])
             
 ### PRINT FUNCTIONS ###
     def printRaces(self):
         print("RACES:")
-        self._tournamentGenerator.printRaces()
+        printRaces(self._tournamentGenerator.tournament.getRaces())
+
+    def printRacesDoneCompact(self):
+        print("RACES DONE:")
+        printRaces(convertRaceResultsToRaces(self._tournamentGenerator.tournament.getRaceResults()))
+
+    def printRacesToDo(self):
+        print("RACES TO DO:")
+        printRaces(self._tournamentGenerator.tournament.getRacesToDo())
 
     def printPlayers(self):
         print("PLAYERS:")
@@ -171,43 +263,6 @@ class TournamentShell(Cmd):
                 print("\t\t" + str(j) + ". " + result[0].getName())
                 j+=1
             i+=1
-
-    def printRacesDoneCompact(self):
-        print("RACES DONE:")
-        i = 1
-        for race in self._tournamentGenerator.tournament.getRaceResults():
-            string = ""
-            if (i < 10):
-                string = " " + str(i) + ". "
-            else:
-                string = str(i) + ". "
-            string += "["
-            for playerResult in race:
-                string += ( playerResult[0].getName() + "," )
-            # eliminate last comma
-            string = string[:-1]
-            string += "]"
-            print(string)
-            i+=1
-
-    def printRacesToDo(self):
-        print("RACES TO DO:")
-
-        #i = 1
-        #for race in self._tournamentGenerator.tournament.getRaceResults():
-            #string = ""
-            #if (i < 10):
-                #string = " " + str(i) + ". "
-            #else:
-                #string = str(i) + ". "
-            #string += "["
-            #for playerResult in race:
-                #string += ( playerResult[0].getName() + "," )
-            ## eliminate last comma
-            #string = string[:-1]
-            #string += "]"
-            #print(string)
-            #i+=1
 
     def printStanding(self):
         print("STANDINGS:")

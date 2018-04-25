@@ -18,7 +18,7 @@
 
 from tournamentGenerator.tournamentShell import *
 
-from random import shuffle
+from random import shuffle, randint
 
 class TournamentShellTest():
 
@@ -53,12 +53,27 @@ class TournamentShellTest():
         )
         return
 
+    def _generateCoherentRaceResult(self,tournament):
+        races = tournament.getRaces()
+        randomRaceIndex = randint(0,len(races)-1)
+        # adds race result with players of random race
+             # tournament[randomRaceIndex][0] = first player of random race
+        tournament.addRaceResult(\
+            [\
+                (races[randomRaceIndex][0],1,time(0,1,21,340000)),\
+                (races[randomRaceIndex][1],2,time(0,1,22,450000)),\
+                (races[randomRaceIndex][2],3,time(0,1,21,484000)),\
+                (races[randomRaceIndex][3],4,time(0,1,23,000000))\
+            ]\
+        )
+        return
 
     def test1(self):
         a = TournamentShell()
         a.playersPerRace = 4
         a.numberOfPlayers = 10
-        a.generateTournament(points=(4,3,2,1))
+        a.points = (4,3,2,1)
+        a.generateTournament()
     
         a.printStanding()
         a.printFastestLapStanding()
@@ -67,11 +82,11 @@ class TournamentShellTest():
         a.printRaces()
         a.printRacesDone()
         a.printRacesToDo()
-        self._generateRaceResult1(a._tournamentGenerator.tournament)
+        self._generateCoherentRaceResult(a._tournamentGenerator.tournament)
         a.printRacesDoneCompact()
         a.printRacesDone()
         a.printRacesToDo()
-        self._generateRaceResult2(a._tournamentGenerator.tournament)
+        self._generateCoherentRaceResult(a._tournamentGenerator.tournament)
         a.printRacesDoneCompact()
         a.printRacesToDo()
         a.printRacesDone()
@@ -86,7 +101,3 @@ class TournamentShellTest():
         a.printPlayerPoints(2)
         a.printStanding()
         a.printFastestLapStanding()
-
-if __name__ == '__main__':
-    a = TournamentShellTest()
-    a.test1()

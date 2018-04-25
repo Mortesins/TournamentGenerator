@@ -34,11 +34,11 @@ class PlayerTest(unittest.TestCase):
     def test_addNracesToIthPlayer(self):
         players = self._return10players()
         self._addNracesToIthPlayer(players,0,9)
-        self.assertEquals(players[0].getRaces(),9)
+        self.assertEqual(players[0].getRaces(),9)
         self._addNracesToIthPlayer(players,3,9)
-        self.assertEquals(players[3].getRaces(),9)
+        self.assertEqual(players[3].getRaces(),9)
         self._addNracesToIthPlayer(players,5,1)
-        self.assertEquals(players[5].getRaces(),1)
+        self.assertEqual(players[5].getRaces(),1)
         
 ####################
 ### PLAYER CLASS ###
@@ -58,19 +58,19 @@ class PlayerTest(unittest.TestCase):
         playersFaceEachOther(playerA,playerB)
         playersFaceEachOther(playerA,playerB)
         playersFaceEachOther(playerB,playerC)
-        self.assertEquals(playerA.numberOfTimesAlreadyFaced(playerB),3)
-        self.assertEquals(playerB.numberOfTimesAlreadyFaced(playerA),3)
-        self.assertEquals(playerB.numberOfTimesAlreadyFaced(playerC),1)
-        self.assertEquals(playerC.numberOfTimesAlreadyFaced(playerB),1)
-        self.assertEquals(playerA.numberOfTimesAlreadyFaced(playerC),0)
-        self.assertEquals(playerC.numberOfTimesAlreadyFaced(playerA),0)
+        self.assertEqual(playerA.numberOfTimesAlreadyFaced(playerB),3)
+        self.assertEqual(playerB.numberOfTimesAlreadyFaced(playerA),3)
+        self.assertEqual(playerB.numberOfTimesAlreadyFaced(playerC),1)
+        self.assertEqual(playerC.numberOfTimesAlreadyFaced(playerB),1)
+        self.assertEqual(playerA.numberOfTimesAlreadyFaced(playerC),0)
+        self.assertEqual(playerC.numberOfTimesAlreadyFaced(playerA),0)
         playersFaceEachOther(playerA,playerC)
-        self.assertEquals(playerA.numberOfTimesAlreadyFaced(playerC),1)
-        self.assertEquals(playerC.numberOfTimesAlreadyFaced(playerA),1)
-        self.assertEquals(playerA.numberOfTimesAlreadyFaced(playerB),3)
-        self.assertEquals(playerB.numberOfTimesAlreadyFaced(playerA),3)
-        self.assertEquals(playerB.numberOfTimesAlreadyFaced(playerC),1)
-        self.assertEquals(playerC.numberOfTimesAlreadyFaced(playerB),1)
+        self.assertEqual(playerA.numberOfTimesAlreadyFaced(playerC),1)
+        self.assertEqual(playerC.numberOfTimesAlreadyFaced(playerA),1)
+        self.assertEqual(playerA.numberOfTimesAlreadyFaced(playerB),3)
+        self.assertEqual(playerB.numberOfTimesAlreadyFaced(playerA),3)
+        self.assertEqual(playerB.numberOfTimesAlreadyFaced(playerC),1)
+        self.assertEqual(playerC.numberOfTimesAlreadyFaced(playerB),1)
 
     def test_numberPlayersFaced(self):
         playerA = Player("A")
@@ -84,46 +84,46 @@ class PlayerTest(unittest.TestCase):
         # AvsB
         playersFaceEachOther(players[0],players[1])
         # A has not faced C D
-        self.assertEquals(players[0].playersNotFaced(players),[players[2],players[3]])
+        self.assertEqual(players[0].playersNotFaced(players),[players[2],players[3]])
         # B has not faced C D
-        self.assertEquals(players[1].playersNotFaced(players),[players[2],players[3]])
+        self.assertEqual(players[1].playersNotFaced(players),[players[2],players[3]])
         # C has not faced A B D
-        self.assertEquals(players[2].playersNotFaced(players),[players[0],players[1],players[3]])
+        self.assertEqual(players[2].playersNotFaced(players),[players[0],players[1],players[3]])
         # D has not faced A B C
-        self.assertEquals(players[3].playersNotFaced(players),[players[0],players[1],players[2]])
+        self.assertEqual(players[3].playersNotFaced(players),[players[0],players[1],players[2]])
         # CvsD
         playersFaceEachOther(players[2],players[3])
         # A has not faced C D
-        self.assertEquals(players[0].playersNotFaced(players),[players[2],players[3]])
+        self.assertEqual(players[0].playersNotFaced(players),[players[2],players[3]])
         # B has not faced C D
-        self.assertEquals(players[1].playersNotFaced(players),[players[2],players[3]])
+        self.assertEqual(players[1].playersNotFaced(players),[players[2],players[3]])
         # C has not faced A B
-        self.assertEquals(players[2].playersNotFaced(players),[players[0],players[1]])
+        self.assertEqual(players[2].playersNotFaced(players),[players[0],players[1]])
         # D has not faced A B
-        self.assertEquals(players[3].playersNotFaced(players),[players[0],players[1]])
+        self.assertEqual(players[3].playersNotFaced(players),[players[0],players[1]])
         # BvsC tre volte (potrebbe capitare se fanno piu' gare insieme)
         playersFaceEachOther(players[1],players[2])
         playersFaceEachOther(players[1],players[2])
         playersFaceEachOther(players[1],players[2])
         # A has not faced C D
-        self.assertEquals(players[0].playersNotFaced(players),[players[2],players[3]])
+        self.assertEqual(players[0].playersNotFaced(players),[players[2],players[3]])
         # B has not faced D
-        self.assertEquals(players[1].playersNotFaced(players),[players[3]])
+        self.assertEqual(players[1].playersNotFaced(players),[players[3]])
         # C has not faced A B
-        self.assertEquals(players[2].playersNotFaced(players),[players[0]])
+        self.assertEqual(players[2].playersNotFaced(players),[players[0]])
         # D has not faced A B
-        self.assertEquals(players[3].playersNotFaced(players),[players[0],players[1]])
+        self.assertEqual(players[3].playersNotFaced(players),[players[0],players[1]])
         # BvsD due volte (potrebbe capitare se fanno piu' gare insieme)
         playersFaceEachOther(players[1],players[3])
         playersFaceEachOther(players[1],players[3])
         # A has not faced C D
-        self.assertEquals(players[0].playersNotFaced(players),[players[2],players[3]])
+        self.assertEqual(players[0].playersNotFaced(players),[players[2],players[3]])
         # B has faced everyone
-        self.assertEquals(players[1].playersNotFaced(players),[])
+        self.assertEqual(players[1].playersNotFaced(players),[])
         # C has not faced A B
-        self.assertEquals(players[2].playersNotFaced(players),[players[0]])
+        self.assertEqual(players[2].playersNotFaced(players),[players[0]])
         # D has not faced A B
-        self.assertEquals(players[3].playersNotFaced(players),[players[0]])
+        self.assertEqual(players[3].playersNotFaced(players),[players[0]])
 
 ###############################
 ### PLAYER HELPER FUNCTIONS ###
@@ -152,8 +152,8 @@ class PlayerTest(unittest.TestCase):
         self._addNracesToIthPlayer(players,9,8)
         
         playersLeastRaces = playersWithLeastRaces(players)
-        self.assertEquals(len(playersLeastRaces),1)
-        self.assertEquals(playersLeastRaces[0].getRaces(),1)
+        self.assertEqual(len(playersLeastRaces),1)
+        self.assertEqual(playersLeastRaces[0].getRaces(),1)
      
     def test_playersWithLeastRaces2(self):
         players = self._return10players()
@@ -170,9 +170,9 @@ class PlayerTest(unittest.TestCase):
         self._addNracesToIthPlayer(players,9,8)
 
         playersLeastRaces = playersWithLeastRaces(players)
-        self.assertEquals(len(playersLeastRaces),2)
-        self.assertEquals(playersLeastRaces[0].getRaces(),2)
-        self.assertEquals(playersLeastRaces[1].getRaces(),2)
+        self.assertEqual(len(playersLeastRaces),2)
+        self.assertEqual(playersLeastRaces[0].getRaces(),2)
+        self.assertEqual(playersLeastRaces[1].getRaces(),2)
     
     def test_playersWithLeastRaces3(self):
         players = self._return10players()
@@ -189,10 +189,10 @@ class PlayerTest(unittest.TestCase):
         self._addNracesToIthPlayer(players,9,8)
 
         playersLeastRaces = playersWithLeastRaces(players)
-        self.assertEquals(len(playersLeastRaces),3)
-        self.assertEquals(playersLeastRaces[0].getRaces(),4)
-        self.assertEquals(playersLeastRaces[1].getRaces(),4)
-        self.assertEquals(playersLeastRaces[2].getRaces(),4)
+        self.assertEqual(len(playersLeastRaces),3)
+        self.assertEqual(playersLeastRaces[0].getRaces(),4)
+        self.assertEqual(playersLeastRaces[1].getRaces(),4)
+        self.assertEqual(playersLeastRaces[2].getRaces(),4)
     
     def test_nPlayersWithLeastRaces(self):
         players = self._return10players()
@@ -209,22 +209,22 @@ class PlayerTest(unittest.TestCase):
         self._addNracesToIthPlayer(players,9,8)
 
         playersLeastRaces = nPlayersWithLeastRaces(1,players)
-        self.assertEquals(len(playersLeastRaces),1)
-        self.assertEquals(playersLeastRaces[0].getRaces(),4)
+        self.assertEqual(len(playersLeastRaces),1)
+        self.assertEqual(playersLeastRaces[0].getRaces(),4)
         
         playersLeastRaces = nPlayersWithLeastRaces(3,players)
-        self.assertEquals(len(playersLeastRaces),3)
-        self.assertEquals(playersLeastRaces[0].getRaces(),4)
-        self.assertEquals(playersLeastRaces[1].getRaces(),4)
-        self.assertEquals(playersLeastRaces[2].getRaces(),4)
+        self.assertEqual(len(playersLeastRaces),3)
+        self.assertEqual(playersLeastRaces[0].getRaces(),4)
+        self.assertEqual(playersLeastRaces[1].getRaces(),4)
+        self.assertEqual(playersLeastRaces[2].getRaces(),4)
         
         playersLeastRaces = nPlayersWithLeastRaces(5,players)
-        self.assertEquals(len(playersLeastRaces),5)
-        self.assertEquals(playersLeastRaces[0].getRaces(),4)
-        self.assertEquals(playersLeastRaces[1].getRaces(),4)
-        self.assertEquals(playersLeastRaces[2].getRaces(),4)
-        self.assertEquals(playersLeastRaces[3].getRaces(),6)
-        self.assertEquals(playersLeastRaces[4].getRaces(),7)
+        self.assertEqual(len(playersLeastRaces),5)
+        self.assertEqual(playersLeastRaces[0].getRaces(),4)
+        self.assertEqual(playersLeastRaces[1].getRaces(),4)
+        self.assertEqual(playersLeastRaces[2].getRaces(),4)
+        self.assertEqual(playersLeastRaces[3].getRaces(),6)
+        self.assertEqual(playersLeastRaces[4].getRaces(),7)
 
     def test_atLeastNplayersWithLeastRaces(self):
         players = self._return10players()
@@ -241,36 +241,36 @@ class PlayerTest(unittest.TestCase):
         self._addNracesToIthPlayer(players,9,8)
 
         playersLeastRaces = atLeastNplayersWithLeastRaces(1,players)
-        self.assertEquals(len(playersLeastRaces),3)
-        self.assertEquals(playersLeastRaces[0].getRaces(),4)
-        self.assertEquals(playersLeastRaces[1].getRaces(),4)
-        self.assertEquals(playersLeastRaces[2].getRaces(),4)
+        self.assertEqual(len(playersLeastRaces),3)
+        self.assertEqual(playersLeastRaces[0].getRaces(),4)
+        self.assertEqual(playersLeastRaces[1].getRaces(),4)
+        self.assertEqual(playersLeastRaces[2].getRaces(),4)
         
         playersLeastRaces = atLeastNplayersWithLeastRaces(2,players)
-        self.assertEquals(len(playersLeastRaces),3)
-        self.assertEquals(playersLeastRaces[0].getRaces(),4)
-        self.assertEquals(playersLeastRaces[1].getRaces(),4)
-        self.assertEquals(playersLeastRaces[2].getRaces(),4)
+        self.assertEqual(len(playersLeastRaces),3)
+        self.assertEqual(playersLeastRaces[0].getRaces(),4)
+        self.assertEqual(playersLeastRaces[1].getRaces(),4)
+        self.assertEqual(playersLeastRaces[2].getRaces(),4)
         
         playersLeastRaces = atLeastNplayersWithLeastRaces(3,players)
-        self.assertEquals(len(playersLeastRaces),3)
-        self.assertEquals(playersLeastRaces[0].getRaces(),4)
-        self.assertEquals(playersLeastRaces[1].getRaces(),4)
-        self.assertEquals(playersLeastRaces[2].getRaces(),4)
+        self.assertEqual(len(playersLeastRaces),3)
+        self.assertEqual(playersLeastRaces[0].getRaces(),4)
+        self.assertEqual(playersLeastRaces[1].getRaces(),4)
+        self.assertEqual(playersLeastRaces[2].getRaces(),4)
         
         playersLeastRaces = atLeastNplayersWithLeastRaces(4,players)
-        self.assertEquals(len(playersLeastRaces),4)
-        self.assertEquals(playersLeastRaces[0].getRaces(),4)
-        self.assertEquals(playersLeastRaces[1].getRaces(),4)
-        self.assertEquals(playersLeastRaces[2].getRaces(),4)
-        self.assertEquals(playersLeastRaces[3].getRaces(),6)
+        self.assertEqual(len(playersLeastRaces),4)
+        self.assertEqual(playersLeastRaces[0].getRaces(),4)
+        self.assertEqual(playersLeastRaces[1].getRaces(),4)
+        self.assertEqual(playersLeastRaces[2].getRaces(),4)
+        self.assertEqual(playersLeastRaces[3].getRaces(),6)
 
         playersLeastRaces = atLeastNplayersWithLeastRaces(5,players)
-        self.assertEquals(len(playersLeastRaces),7)
-        self.assertEquals(playersLeastRaces[0].getRaces(),4)
-        self.assertEquals(playersLeastRaces[1].getRaces(),4)
-        self.assertEquals(playersLeastRaces[2].getRaces(),4)
-        self.assertEquals(playersLeastRaces[3].getRaces(),6)
-        self.assertEquals(playersLeastRaces[4].getRaces(),7)
-        self.assertEquals(playersLeastRaces[5].getRaces(),7)
-        self.assertEquals(playersLeastRaces[6].getRaces(),7)
+        self.assertEqual(len(playersLeastRaces),7)
+        self.assertEqual(playersLeastRaces[0].getRaces(),4)
+        self.assertEqual(playersLeastRaces[1].getRaces(),4)
+        self.assertEqual(playersLeastRaces[2].getRaces(),4)
+        self.assertEqual(playersLeastRaces[3].getRaces(),6)
+        self.assertEqual(playersLeastRaces[4].getRaces(),7)
+        self.assertEqual(playersLeastRaces[5].getRaces(),7)
+        self.assertEqual(playersLeastRaces[6].getRaces(),7)

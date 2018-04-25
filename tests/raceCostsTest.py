@@ -35,27 +35,27 @@ class RaceCostsTest(unittest.TestCase):
         # all the races cost the same, so should have 4*3/2 races (all combinations of two players, since one is fixed)
         players = list(tournament.players)
         players.remove(A) # because I fix A
-        self.assertEquals(len(leastExpensiveRaces(players,3,tournament.averageNumberOfRaces(),[A])),4*3/2)
+        self.assertEqual(len(leastExpensiveRaces(players,3,tournament.averageNumberOfRaces(),[A])),4*3/2)
       # add ABC
         tournament.addRace([A,B,C])
         # least expensive ADE,BDE,CDE
         # fix A or B or C, length 1
         players = list(tournament.players)
         players.remove(A) # because I fix A
-        self.assertEquals(len(leastExpensiveRaces(players,3,tournament.averageNumberOfRaces(),[A])),1)
+        self.assertEqual(len(leastExpensiveRaces(players,3,tournament.averageNumberOfRaces(),[A])),1)
         players = list(tournament.players)
         players.remove(B) # because I fix B
-        self.assertEquals(len(leastExpensiveRaces(players,3,tournament.averageNumberOfRaces(),[B])),1)
+        self.assertEqual(len(leastExpensiveRaces(players,3,tournament.averageNumberOfRaces(),[B])),1)
         players = list(tournament.players)
         players.remove(C) # because I fix C
-        self.assertEquals(len(leastExpensiveRaces(players,3,tournament.averageNumberOfRaces(),[C])),1)
+        self.assertEqual(len(leastExpensiveRaces(players,3,tournament.averageNumberOfRaces(),[C])),1)
         # fix E or D, length 3
         players = list(tournament.players)
         players.remove(D) # because I fix D
-        self.assertEquals(len(leastExpensiveRaces(players,3,tournament.averageNumberOfRaces(),[D])),3)
+        self.assertEqual(len(leastExpensiveRaces(players,3,tournament.averageNumberOfRaces(),[D])),3)
         players = list(tournament.players)
         players.remove(E) # because I fix E
-        self.assertEquals(len(leastExpensiveRaces(players,3,tournament.averageNumberOfRaces(),[E])),3)
+        self.assertEqual(len(leastExpensiveRaces(players,3,tournament.averageNumberOfRaces(),[E])),3)
       # 4 players per race
         # 5 players (ABCDE)
         tournament = Tournament.init_GeneratePlayers(5)
@@ -69,12 +69,12 @@ class RaceCostsTest(unittest.TestCase):
         players.remove(A) # because I fix A
         players.remove(B) # because I fix B
         players.remove(C) # because I fix C
-        self.assertEquals(len(leastExpensiveRaces(players,4,tournament.averageNumberOfRaces(),[A,B,C])),2)
+        self.assertEqual(len(leastExpensiveRaces(players,4,tournament.averageNumberOfRaces(),[A,B,C])),2)
         # all the races cost the same, so should have 3*2/(2) races (all combinations of two players, since two are fixed)
         players = list(tournament.players)
         players.remove(A) # because I fix A
         players.remove(B) # because I fix B
-        self.assertEquals(len(leastExpensiveRaces(players,4,tournament.averageNumberOfRaces(),[A,B])),3)
+        self.assertEqual(len(leastExpensiveRaces(players,4,tournament.averageNumberOfRaces(),[A,B])),3)
         # 6 players (ABCDEF)
         tournament = Tournament.init_GeneratePlayers(6)
         A = tournament.players[0]
@@ -86,7 +86,7 @@ class RaceCostsTest(unittest.TestCase):
         # all the races cost the same, so should have 5*4*3/3*2 races (all combinations of two players, since one player is fixed, A)
         players = list(tournament.players)
         players.remove(A) # because I fix A
-        self.assertEquals(len(leastExpensiveRaces(players,4,tournament.averageNumberOfRaces(),[A])),10)
+        self.assertEqual(len(leastExpensiveRaces(players,4,tournament.averageNumberOfRaces(),[A])),10)
       # add ABC
         tournament.addRace([A,B,C,D])
         # I fix A,E,F, so races are ABEF,ACEF,ADEF and should all have the same cost
@@ -94,7 +94,7 @@ class RaceCostsTest(unittest.TestCase):
         players.remove(A) # because I fix A
         players.remove(E) # because I fix E
         players.remove(F) # because I fix F
-        self.assertEquals(len(leastExpensiveRaces(players,4,tournament.averageNumberOfRaces(),[A,E,F])),3)
+        self.assertEqual(len(leastExpensiveRaces(players,4,tournament.averageNumberOfRaces(),[A,E,F])),3)
 
 
     def test_leastExpensiveRaces_noFixedPlayer(self):
@@ -107,11 +107,11 @@ class RaceCostsTest(unittest.TestCase):
         E = tournament.players[4]
       # 3 players per race
         # all the races cost the same, so should have 5*4*3/(3*2) races (all combinations of two players, since one is fixed)
-        self.assertEquals(len(leastExpensiveRaces(tournament.players,3,tournament.averageNumberOfRaces())),10)
+        self.assertEqual(len(leastExpensiveRaces(tournament.players,3,tournament.averageNumberOfRaces())),10)
       # add ABC
         tournament.addRace([A,B,C])
         # least expensive ADE,BDE,CDE
-        self.assertEquals(len(leastExpensiveRaces(tournament.players,3,tournament.averageNumberOfRaces())),3)
+        self.assertEqual(len(leastExpensiveRaces(tournament.players,3,tournament.averageNumberOfRaces())),3)
       # 4 players per race
         # 5 players (ABCDE)
         tournament = Tournament.init_GeneratePlayers(5)
@@ -121,4 +121,4 @@ class RaceCostsTest(unittest.TestCase):
         D = tournament.players[3]
         E = tournament.players[4]
         # all the races cost the same, so should have 5*4*3*2/(2*3*4) races (all combinations of three players, since one is fixed)
-        self.assertEquals(len(leastExpensiveRaces(tournament.players,4,tournament.averageNumberOfRaces())),5)
+        self.assertEqual(len(leastExpensiveRaces(tournament.players,4,tournament.averageNumberOfRaces())),5)
