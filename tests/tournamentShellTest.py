@@ -16,12 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 ########################################################################
 
-import unittest
 from tournamentGenerator.tournamentShell import *
 
 from random import shuffle
 
-class TournamentShellTest(unittest.TestCase):
+class TournamentShellTest():
 
     def _generateRaceResult1(self,tournament):
         A = tournament.players[0]
@@ -58,16 +57,25 @@ class TournamentShellTest(unittest.TestCase):
     def test1(self):
         a = TournamentShell()
         a.playersPerRace = 4
-        a.numberOfPlayers = 16
+        a.numberOfPlayers = 10
         a.generateTournament(points=(4,3,2,1))
     
         a.printStanding()
         a.printFastestLapStanding()
     
-        self._generateRaceResult1(a._tournamentGenerator.tournament)
-        self._generateRaceResult2(a._tournamentGenerator.tournament)
         
         a.printRaces()
+        a.printRacesDone()
+        a.printRacesToDo()
+        self._generateRaceResult1(a._tournamentGenerator.tournament)
+        a.printRacesDoneCompact()
+        a.printRacesDone()
+        a.printRacesToDo()
+        self._generateRaceResult2(a._tournamentGenerator.tournament)
+        a.printRacesDoneCompact()
+        a.printRacesToDo()
+        a.printRacesDone()
+        
         a.printPlayers()
         a.printPlayersFacedByEachPlayer()
         a.printNumberOfRacesOfEachPlayer()
@@ -76,7 +84,9 @@ class TournamentShellTest(unittest.TestCase):
         a.printPlayerNumberOfRacesDone(2)
         a.printPlayerFastestLap(2)
         a.printPlayerPoints(2)
-        a.printPlayedRacesCompact()
-        a.printPlayedRaces()
         a.printStanding()
         a.printFastestLapStanding()
+
+if __name__ == '__main__':
+    a = TournamentShellTest()
+    a.test1()

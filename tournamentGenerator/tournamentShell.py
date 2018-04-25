@@ -161,7 +161,7 @@ class TournamentShell(Cmd):
                 print(str(i) + ".", player)
             i += 1
     
-    def printPlayedRaces(self):
+    def printRacesDone(self):
         print("RACES DONE:")
         i = 1
         for race in self._tournamentGenerator.tournament.getRaceResults():
@@ -172,7 +172,7 @@ class TournamentShell(Cmd):
                 j+=1
             i+=1
 
-    def printPlayedRacesCompact(self):
+    def printRacesDoneCompact(self):
         print("RACES DONE:")
         i = 1
         for race in self._tournamentGenerator.tournament.getRaceResults():
@@ -189,6 +189,25 @@ class TournamentShell(Cmd):
             string += "]"
             print(string)
             i+=1
+
+    def printRacesToDo(self):
+        print("RACES TO DO:")
+
+        #i = 1
+        #for race in self._tournamentGenerator.tournament.getRaceResults():
+            #string = ""
+            #if (i < 10):
+                #string = " " + str(i) + ". "
+            #else:
+                #string = str(i) + ". "
+            #string += "["
+            #for playerResult in race:
+                #string += ( playerResult[0].getName() + "," )
+            ## eliminate last comma
+            #string = string[:-1]
+            #string += "]"
+            #print(string)
+            #i+=1
 
     def printStanding(self):
         print("STANDINGS:")
@@ -283,3 +302,7 @@ class TournamentShell(Cmd):
         print("POINTS:")
         print(player.getName() + ": " + str(player.getPoints()))
 #######################
+
+### HELPER FUNCTIONS ###
+
+########################
