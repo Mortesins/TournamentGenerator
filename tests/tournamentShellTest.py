@@ -48,7 +48,7 @@ class TournamentShellTest():
                 (A,1,time(0,1,21,340000)),\
                 (F,2,time(0,1,22,450000)),\
                 (C,3,time(0,1,21,484000)),\
-                (D,4,time(0,1,23,000000))\
+                (D,4,time(0,1,23,111000))\
             ]\
         )
         return
@@ -63,7 +63,7 @@ class TournamentShellTest():
                 (races[randomRaceIndex][0],1,time(0,1,21,340000)),\
                 (races[randomRaceIndex][1],2,time(0,1,22,450000)),\
                 (races[randomRaceIndex][2],3,time(0,1,21,484000)),\
-                (races[randomRaceIndex][3],4,time(0,1,23,000000))\
+                (races[randomRaceIndex][3],4,time(0,1,23,111000))\
             ]\
         )
         return

@@ -124,7 +124,7 @@ class TournamentShell(Cmd):
         points = pointsString.split(",")
         for i in range(0,len(points)):
             points[i] = int(points[i])
-        self._points = points
+        self._points = tuple(points)
     def help_setPoints(self):
         print("USAGE: setPoints POINTS_TUPLE.")
         print("EXAMPLE: setPoints (4,3,2,1)")
@@ -292,7 +292,8 @@ class TournamentShell(Cmd):
             # get fastest lap
             fastestLapString = input("\tFastest Lap Time: ")
             splitted = fastestLapString.split(":")
-            fastestLap = time(0,int(splitted[0]),int(splitted[1]),int(splitted[2]))
+                # *1000 because time needs microseconds
+            fastestLap = time(0,int(splitted[0]),int(splitted[1]),int(splitted[2])*1000)
             # add race result
             raceResult.append([player,position,fastestLap])
         self._tournamentGenerator.tournament.addRaceResult(raceResult)
