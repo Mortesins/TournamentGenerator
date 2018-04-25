@@ -1,5 +1,5 @@
 ########################################################################
-# Software for collecting data from PV energy meters
+# Software for generating races of a tournament
 # Copyright (C) 2018 Axel Bernardinis <abernardinis@hotmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
