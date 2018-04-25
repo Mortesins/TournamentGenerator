@@ -80,6 +80,9 @@ class Tournament():
             raise TypeError(race + " is not of type Player")
         return
     
+    def getNumberOfPlayers(self):
+        return len(self.players)
+
     def getPlayers(self):
         return list(self.players)
         
@@ -222,11 +225,17 @@ class Tournament():
 
     def getFastestLapTime(self):
         self._calculateStandingsFastestLap()
-        return self.standingsFastestLap[0].getFastestLap()
+        if (len(self.standingsFastestLap) == 0):
+            return None
+        else:
+            return self.standingsFastestLap[0].getFastestLap()
 
     def getFastestLapPlayer(self):
         self._calculateStandingsFastestLap()
-        return self.standingsFastestLap[0]
+        if (len(self.standingsFastestLap) == 0):
+            return None
+        else:
+            return self.standingsFastestLap[0]
 
     def getFastestLapStanding(self):
         ''' returns [ player, ... ] ordered by fastest lap '''

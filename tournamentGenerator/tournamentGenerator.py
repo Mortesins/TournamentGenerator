@@ -42,7 +42,7 @@ class TournamentGenerator():
         fp = open(filename)
         for line in fp:
             players.append(Player(line[:-1]))
-        return cls(Tournament(players,points), len(players), playersPerRace, printRaces, points)
+        return cls(Tournament(players,points), len(players), playersPerRace, printRaces)
 
     def printRace(self,race):
         if self.printRacesFlag:
