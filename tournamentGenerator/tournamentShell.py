@@ -55,20 +55,28 @@ class TournamentShell(Cmd):
     
     ### generate tournament ###
     def do_generateTournament(self,s):
-        # if no parameters
-        if (s == ""):
-            self.generateTournament()
-        else:
-            # default no verbose no print races
-            v = False
-            p = False
-            # parameters
-            p = s.split
-            if "-v" in p:
-                v = True
-            if "--printRacesOnGenerate" in p:
-                p = True
-            self.generateTournament(v,p)
+        try:
+            # if no parameters
+            if (s == ""):
+                self.generateTournament()
+            else:
+                # default no verbose no print races
+                v = False
+                p = False
+                # parameters
+                p = s.split
+                if "-v" in p:
+                    v = True
+                if "--printRacesOnGenerate" in p:
+                    p = True
+                self.generateTournament(v,p)
+        except ValueError as e:
+            print("ERROR: cannot generate tournament")
+            print(e)
+            print("NOTE: to generate the tournament the following must be set beforehand:")
+            print("\t numberOfPlayers or playerListFilename")
+            print("\t points")
+            print("\t playersPerRace")
 
     def help_playRace(self,s):
         print("USAGE: generateTournament [OPTIONS]")
@@ -163,55 +171,15 @@ class TournamentShell(Cmd):
         self.printPlayersFacedByEachPlayer()
   # print function for specific player
     def do_printPlayerNumberOfRaces(self,s):
-        p = s.split()
-        try:
-            playerNumber = int(p[0])
-        except:
-            print("Wrong player number")
-        if ( (playerNumber > 0) and (playerNumber <= self.numberOfPlayers) ):
-            self.printPlayerNumberOfRaces(playerNumber)
-        else:
-            print("Wrong player number")
+        self._printPlayerStat(s,self.printPlayerNumberOfRaces)
     def do_printPlayerNumberOfRacesDone(self,s):
-        p = s.split()
-        try:
-            playerNumber = int(p[0])
-        except:
-            print("Wrong player number")
-        if ( (playerNumber > 0) and (playerNumber <= self.numberOfPlayers) ):
-            self.printPlayerNumberOfRacesDone(playerNumber)
-        else:
-            print("Wrong player number")
+        self._printPlayerStat(s,self.printPlayerNumberOfRacesDone)
     def do_printPlayerPlayersFaced(self,s):
-        p = s.split()
-        try:
-            playerNumber = int(p[0])
-        except:
-            print("Wrong player number")
-        if ( (playerNumber > 0) and (playerNumber <= self.numberOfPlayers) ):
-            self.printPlayerPlayersFaced(playerNumber)
-        else:
-            print("Wrong player number")
+        self._printPlayerStat(s,self.printPlayerPlayersFaced)
     def do_printPlayerFastestLap(self,s):
-        p = s.split()
-        try:
-            playerNumber = int(p[0])
-        except:
-            print("Wrong player number")
-        if ( (playerNumber > 0) and (playerNumber <= self.numberOfPlayers) ):
-            self.printPlayerFastestLap(playerNumber)
-        else:
-            print("Wrong player number")
+        self._printPlayerStat(s,self.printPlayerFastestLap)
     def do_printPlayerPoints(self,s):
-        p = s.split()
-        try:
-            playerNumber = int(p[0])
-        except:
-            print("Wrong player number")
-        if ( (playerNumber > 0) and (playerNumber <= self.numberOfPlayers) ):
-            self.printPlayerPoints(playerNumber)
-        else:
-            print("Wrong player number")
+        self._printPlayerStat(s,self.printPlayerPoints)
   #######################
 
 ####################
@@ -222,9 +190,10 @@ class TournamentShell(Cmd):
 
     @numberOfPlayers.setter
     def numberOfPlayers(self, value):
-        if value < 0:
+        if (type(value) is not int) or (value < 0):
             raise ValueError("Number of players must be positive")
-        self._numberOfPlayers = value
+        else:
+            self._numberOfPlayers = value
 
     @property
     def playersPerRace(self):
@@ -232,9 +201,10 @@ class TournamentShell(Cmd):
 
     @playersPerRace.setter
     def playersPerRace(self, value):
-        if value < 0:
+        if (type(value) is not int) or (value < 0):
             raise ValueError("Players per race must be positive")
-        self._playersPerRace = value
+        else:
+            self._playersPerRace = value
 
     @property
     def playerListFilename(self):
@@ -261,17 +231,25 @@ class TournamentShell(Cmd):
     def generateTournament(self,verbose=False,printRacesOnGenerate=False):
         if (self._playersPerRace == None):
             raise ValueError("Players per race must be defined")
+        elif (self._points == None):
+            raise ValueError("Points must be defined")
         else:
+            tournamentGenerated = False
+            # first try with file
             if (self._playerListFilename != None):
-                if os.path.isfile(self._playerListFilename)  : 
+                if os.path.isfile(self._playerListFilename) :
                     self._tournamentGenerator = TournamentGenerator.init_fromFile(self._playersPerRace,self._playerListFilename,printRacesOnGenerate,self._points)
                     # set numberOfPlayers as specified in file
                     self._numberOfPlayers = self._tournamentGenerator.tournament.getNumberOfPlayers()
-            elif (self._numberOfPlayers  != None):
-                self._tournamentGenerator = TournamentGenerator.init_GenerateTournament(self._numberOfPlayers,self._playersPerRace,printRacesOnGenerate,self._points)
-            else:
-                raise ValueError("Either players list filename or number of players must be defined")
+                    tournamentGenerated = True
+            # if no filename or file does not exist
+            if (not tournamentGenerated):
+                if (self._numberOfPlayers  != None):
+                    self._tournamentGenerator = TournamentGenerator.init_GenerateTournament(self._numberOfPlayers,self._playersPerRace,printRacesOnGenerate,self._points)
+                else:
+                    raise ValueError("Either players list filename or number of players must be defined")
         self._tournamentGenerator.generate2()
+        print("Tournament generated")
         if verbose:
             self._tournamentGenerator.printRaces()
             self._tournamentGenerator.printNumberOfRacesOfEachPlayer()
@@ -295,7 +273,7 @@ class TournamentShell(Cmd):
             # add race result
             raceResult.append([player,position,fastestLap])
         self._tournamentGenerator.tournament.addRaceResult(raceResult)
-            
+        
 ### PRINT FUNCTIONS ###
     def printRaces(self):
         print("RACES:")
@@ -433,3 +411,39 @@ class TournamentShell(Cmd):
         print("POINTS OF PLAYER: " + player.getName())
         print(str(player.getPoints()))
 #######################
+
+    def _printPlayerStat(self,parameterString,function):
+        '''
+            checks correctness of player number
+            asks the number until number is correct
+            calls the function passed as parameter (the stat function)
+        '''
+        # if no parameter, ask for player number
+        if (parameterString == ""):
+            self.printPlayers()
+            playerNumberRaw = input("Enter number of player: ")
+            incorrectNumber = True
+            while (incorrectNumber):
+                try:
+                    playerNumber = int(playerNumberRaw)
+                    if ( (playerNumber > 0) and (playerNumber <= self.numberOfPlayers) ):
+                        # call stat function
+                        function(playerNumber)
+                        # end loop
+                        incorrectNumber = False
+                    else:
+                        playerNumberRaw = input("Please enter a correct number of player: ")
+                except:
+                    playerNumberRaw = input("Please enter a correct number of player: ")
+        else:
+            # get player number from parameters
+            parameters = parameterString.split()
+            try:
+                playerNumber = int(parameters[0])
+                if ( (playerNumber > 0) and (playerNumber <= self.numberOfPlayers) ):
+                    # call stat function
+                    function(playerNumber)
+                else:
+                    print("Wrong player number")
+            except:
+                print("Wrong player number")
