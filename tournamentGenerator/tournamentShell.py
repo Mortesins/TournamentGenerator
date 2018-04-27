@@ -19,24 +19,36 @@
 from __future__ import print_function
 import os.path
 from cmd import Cmd
+import pickle
 
 from .tournamentGenerator import *
 from .helper import printRaces, convertRaceResultToRace, convertRaceResultsToRaces, sameRace
 
 class TournamentShell(Cmd):
     'Class for tournament shell interfacet'
-    def __init__(self):
+    def __init__(self,tg=None,np=None,pr=None,pf=None,p=None):
         Cmd.__init__(self)
-        self._tournamentGenerator = None
+        self._tournamentGenerator = tg
         # number of players of the tournament needed for generation without file with player names
-        self._numberOfPlayers = None
+        self._numberOfPlayers = np
         # number of players that participate in each race
-        self._playersPerRace = None
-        # filename containing the players name
-        self._playerListFilename = None
+        self._playersPerRace = pr
         # a tuple containing the points received based on placement
             # (4,3,2,1)
-        self._points = None
+        self._points = p
+        
+        # filename containing the players name
+        self._playerListFilename = pf
+    
+    @classmethod
+    def init_fromPickle(cls, filename):
+        tournamentGenerator = pickle.load(open(filename,"rb"))
+        return cls(\
+            tournamentGenerator,\
+            tournamentGenerator.numberOfPlayers,\
+            tournamentGenerator.playersPerRace,\
+            tournamentGenerator.tournament.points\
+        )
 
 ### CMD commands ###
     # exit function
@@ -52,6 +64,18 @@ class TournamentShell(Cmd):
         print("Quits the program")
     def help_q(self):
         print("Quits the program")
+    
+    ### creates pickle of tournamentGenerator as backup ##
+    def do_backup(self,s):
+        self._backup(filename)
+        if (s != ""):
+            p = s.split()
+            self._backup(p[0])
+        else:
+            self._backup()
+    def help_backup(self):
+        print("Creates pickle of tournamentGenerator as backup.")
+        print("USAGE: backup [filename.p]")
     
     ### generate tournament ###
     def do_generateTournament(self,s):
@@ -70,6 +94,8 @@ class TournamentShell(Cmd):
                 if "--printRacesOnGenerate" in p:
                     p = True
                 self.generateTournament(v,p)
+            # write pickle backup
+            self._backup()
         except ValueError as e:
             print("ERROR: cannot generate tournament")
             print(e)
@@ -93,6 +119,9 @@ class TournamentShell(Cmd):
         if (s == ""):
             self.printRacesToDo()
             raceNumberRaw = input("Number of race to be played: ")
+            # quit playRace
+            if (raceNumberRaw == "q"):
+                return False
             incorrectNumber = True
             while (incorrectNumber):
                 try:
@@ -103,8 +132,14 @@ class TournamentShell(Cmd):
                         incorrectNumber = False
                     else:
                         raceNumberRaw = input("Please enter a correct race number: ")
+                        # quit playRace
+                        if (raceNumberRaw == "q"):
+                            return False
                 except ValueError:
                     raceNumberRaw = input("Please enter a correct race number: ")
+                    # quit playRace
+                    if (raceNumberRaw == "q"):
+                        return False
         else:
             # get player number from parameters
             p = s.split()
@@ -118,6 +153,8 @@ class TournamentShell(Cmd):
                 print("Wrong race number")
         if (raceInserted):
             print("Race results inserted")
+            # write pickle backup
+            self._backup()
         else:
             print("ERROR: race results not inserted")
 
@@ -147,6 +184,8 @@ class TournamentShell(Cmd):
                     error = True
         if (not error):
             self._numberOfPlayers = n
+            # write pickle backup
+            self._backup()
         else:
             print("Number of players must be positive integer greater than players per race")
     def help_setNumberOfPlayers(self):
@@ -172,6 +211,8 @@ class TournamentShell(Cmd):
                     error = True
         if (not error):
             self._playersPerRace = n
+            # write pickle backup
+            self._backup()
         else:
             print("Players per race must be positive integer less than number of players")
     def help_setPlayersPerRace(self):
@@ -201,6 +242,8 @@ class TournamentShell(Cmd):
             error = True
         if (not error):
             self._points = tuple(points)
+            # write pickle backup
+            self._backup()
         else:
             print("Points must be positive integers separated by a comma")
             print("EXAMPLE: 4,3,2,1")
@@ -390,6 +433,12 @@ class TournamentShell(Cmd):
             raceResult.append([player,position,fastestLap])
         self._tournamentGenerator.tournament.addRaceResult(raceResult)
         return True
+        
+
+            
+    def _backup(self,filename="tournament.p"):
+        ''' creates a pickle as a backup '''
+        pickle.dump(self._tournamentGenerator,open(filename,"wb"))
         
 ### PRINT FUNCTIONS ###
     def printRaces(self):
