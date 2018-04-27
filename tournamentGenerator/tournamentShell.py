@@ -128,11 +128,26 @@ class TournamentShell(Cmd):
                 Each player name has to be on a new line.\
                 The number of players will be the equal to the number of names in the file")
     def do_setPoints(self,s):
-        pointsString = (s.split())[0]
-        points = pointsString.split(",")
-        for i in range(0,len(points)):
-            points[i] = int(points[i])
-        self._points = tuple(points)
+        # check for comma separated points (int)
+        error = False
+        if (s != ""):
+            pointsString = (s.split())[0]
+            points = pointsString.split(",")
+            for i in range(0,len(points)):
+                try:
+                    points[i] = int(points[i])
+                    # points must be positive
+                    if (points[i] < 0):
+                        error = True
+                except ValueError:
+                    error = True
+        else: # if no parameters
+            error = True
+        if (not error):
+            self._points = tuple(points)
+        else:
+            print("Points must be positive integers separated by a comma")
+            print("EXAMPLE: 4,3,2,1")
     def help_setPoints(self):
         print("USAGE: setPoints POINTS_TUPLE.")
         print("EXAMPLE: setPoints (4,3,2,1)")
@@ -226,7 +241,7 @@ class TournamentShell(Cmd):
         if type(value) is tuple:
             self._points = value
         else:
-            raise ValueError("Points must be a tuple like (4,3,2,1)")
+            raise ValueError("Points must be a tuple of ints, like (4,3,2,1)")
     
     def generateTournament(self,verbose=False,printRacesOnGenerate=False):
         if (self._playersPerRace == None):
