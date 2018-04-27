@@ -89,13 +89,37 @@ class TournamentShell(Cmd):
         print("\t playersPerRace")
     ### play a race ###
     def do_playRace(self,s):
+        raceInserted = False
         if (s == ""):
             self.printRacesToDo()
-            raceNumber = int(input("Number of race to be played: "))
+            raceNumberRaw = input("Number of race to be played: ")
+            incorrectNumber = True
+            while (incorrectNumber):
+                try:
+                    raceNumber = int(raceNumberRaw)
+                    if ( (raceNumber > 0) and (raceNumber <= len(self._tournamentGenerator.tournament.getRacesToDo()) ) ):
+                        raceInserted = self.playRace(raceNumber)
+                        # end loop
+                        incorrectNumber = False
+                    else:
+                        raceNumberRaw = input("Please enter a correct race number: ")
+                except ValueError:
+                    raceNumberRaw = input("Please enter a correct race number: ")
         else:
+            # get player number from parameters
             p = s.split()
-            raceNumber = int(p[0])
-        self.playRace(raceNumber)
+            try:
+                raceNumber = int(p[0])
+                if ( (raceNumber > 0) and (raceNumber <= len(self._tournamentGenerator.tournament.getRacesToDo()) ) ):
+                    raceInserted = self.playRace(raceNumber)
+                else:
+                    print("Wrong race number")
+            except ValueError:
+                print("Wrong race number")
+        if (raceInserted):
+            print("Race results inserted")
+        else:
+            print("ERROR: race results not inserted")
 
     def help_playRace(self,s):
         print("USAGE: playRace RACENUMBER.")
@@ -304,22 +328,68 @@ class TournamentShell(Cmd):
             
     def playRace(self,raceNumber):
         if ( (raceNumber < 1) and (raceNumber > len(self._tournamentGenerator.tournament.getRacesToDo())) ):
+            print("Wrong race number")
             return False
         i = raceNumber - 1
         race = self._tournamentGenerator.tournament.getRaceToDo(i)
         raceResult = []
+        # positions entered, needed to check that the same players won't have same position
+        positions = []
         for player in race:
             print(player.getName() + ": ")
             # get position
-            position = int(input("\tPosition: "))
+            positionRaw = input("\tPosition: ")
+            # quit playRace
+            if (positionRaw == "q"):
+                return False
+            incorrectNumber = True
+            while (incorrectNumber):
+                try:
+                    position = int(positionRaw)
+                    # if position not already set, and position >= 1 and < playersPerRace
+                    if ( (position not in positions) and (position > 0) and (position <= self.playersPerRace) ):
+                        #found position, add it to positions
+                        positions.append(position)
+                        incorrectNumber = False
+                except ValueError:
+                    pass
+                if (incorrectNumber):
+                    positionRaw = input("\tPosition: ")
+                    # quit playRace
+                    if (positionRaw == "q"):
+                        return False
             # get fastest lap
             fastestLapString = input("\tFastest Lap Time: ")
-            splitted = fastestLapString.split(":")
-                # *1000 because time needs microseconds
-            fastestLap = time(0,int(splitted[0]),int(splitted[1]),int(splitted[2])*1000)
+            # quit playRace
+            if (fastestLapString == "q"):
+                return False
+            incorrectString = True
+            while (incorrectString):
+                # check correct length  x:xx:xxx  so length 8
+                if (len(fastestLapString) == 8):
+                    # check 3 number divided by :
+                    splitted = fastestLapString.split(":")
+                    if (len(splitted) == 3):
+                        try:
+                            minutes = int(splitted[0])
+                            seconds = int(splitted[1])
+                            milliseconds = int(splitted[2])
+                            # exclude cases with negative seconds or milliseconds (minutes only 1 letter so can't be negative)
+                            if (seconds > 0 and milliseconds > 0): 
+                                # fastestLapTime correctly parsed, so quit loop
+                                incorrectString = False
+                        except ValueError:
+                            pass
+                if (incorrectString):
+                    fastestLapString = input("\tFastest Lap Time: ")
+                    # quit playRace
+                    if (fastestLapString == "q"):
+                        return False
+            fastestLap = time(0,minutes,seconds,milliseconds*1000) # *1000 because time needs microseconds
             # add race result
             raceResult.append([player,position,fastestLap])
         self._tournamentGenerator.tournament.addRaceResult(raceResult)
+        return True
         
 ### PRINT FUNCTIONS ###
     def printRaces(self):
@@ -479,9 +549,9 @@ class TournamentShell(Cmd):
                         # end loop
                         incorrectNumber = False
                     else:
-                        playerNumberRaw = input("Please enter a correct number of player: ")
-                except:
-                    playerNumberRaw = input("Please enter a correct number of player: ")
+                        playerNumberRaw = input("Please enter a correct player number: ")
+                except ValueError:
+                    playerNumberRaw = input("Please enter a correct player number: ")
         else:
             # get player number from parameters
             parameters = parameterString.split()
@@ -492,5 +562,5 @@ class TournamentShell(Cmd):
                     function(playerNumber)
                 else:
                     print("Wrong player number")
-            except:
+            except ValueError:
                 print("Wrong player number")
