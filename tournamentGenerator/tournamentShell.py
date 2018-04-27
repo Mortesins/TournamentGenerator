@@ -116,13 +116,11 @@ class TournamentShell(Cmd):
                 error = True
         else: # if no parameters
             error = True
-        
         # if playersPerRace set, if numberOfPlayers less than playersPerRace then error
         if (not error):
             if (self._playersPerRace != None):
                 if (self._playersPerRace > n):
                     error = True
-        
         if (not error):
             self._numberOfPlayers = n
         else:
@@ -130,12 +128,28 @@ class TournamentShell(Cmd):
     def help_setNumberOfPlayers(self):
         print("Sets the number of players of the tournament needed for generation without file with player names")
     def do_setPlayersPerRace(self,s):
-        p = s.split()
-        try:
-            n = int(p[0])
+        # check for positive integer
+        error = False
+        if (s != ""):
+            p = s.split()
+            try:
+                n = int(p[0])
+                # points must be positive
+                if (n < 0):
+                    error = True
+            except ValueError:
+                error = True
+        else: # if no parameters
+            error = True
+        # if numberOfPlayers set, if numberOfPlayers less than playersPerRace then error
+        if (not error):
+            if (self._numberOfPlayers != None):
+                if (self._numberOfPlayers < n):
+                    error = True
+        if (not error):
             self._playersPerRace = n
-        except ValueError:
-            print("Error: argument is not a number")
+        else:
+            print("Players per race must be positive integer less than number of players")
     def help_setPlayersPerRace(self):
         print("Sets the number of players that participate in each race")
     def do_setPlayerListFilename(self,s):
