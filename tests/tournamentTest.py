@@ -544,6 +544,70 @@ class TournamentTest(unittest.TestCase):
         self.assertEqual(D.getPoints(),27)
         self.assertEqual(E.getPoints(),18)
 
+    def test_addRaceResult_differentFastestLapPoint(self):
+        # 5 players (ABCDE)
+        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1),2)
+        A = tournament.players[0]
+        B = tournament.players[1]
+        C = tournament.players[2]
+        D = tournament.players[3]
+        E = tournament.players[4]
+        tournament.addRaceResult(\
+            [\
+                (A,1,time(0,1,21,340000)),\
+                (B,4,time(0,1,22,450000)),\
+                (E,2,time(0,1,21,484000)),\
+                (D,3,time(0,1,23,000000))\
+            ]\
+        )
+            
+        self.assertEqual(\
+            tournament.getRaceResult(0),\
+            [\
+                (A,time(0,1,21,340000)),\
+                (E,time(0,1,21,484000)),\
+                (D,time(0,1,23,000000)),\
+                (B,time(0,1,22,450000))\
+            ]\
+        )
+        self.assertEqual(A.getFastestLap(),time(0,1,21,340000))
+        self.assertEqual(B.getFastestLap(),time(0,1,22,450000))
+        self.assertEqual(D.getFastestLap(),time(0,1,23,000000))
+        self.assertEqual(E.getFastestLap(),time(0,1,21,484000))
+        self.assertEqual(A.getPoints(),6) # +2 for fastest lap
+        self.assertEqual(B.getPoints(),1)
+        self.assertEqual(D.getPoints(),2)
+        self.assertEqual(E.getPoints(),3)
+
+        tournament.addRaceResult(\
+            [\
+                (A,2,time(0,1,21,300000)),\
+                (B,3,time(0,1,21,450000)),\
+                (C,1,time(0,1,20,984000)),\
+                (D,4,time(0,1,24,000000))\
+            ]\
+        )
+            
+        self.assertEqual(\
+            tournament.getRaceResult(1),\
+            [\
+                (C,time(0,1,20,984000)),\
+                (A,time(0,1,21,300000)),\
+                (B,time(0,1,21,450000)),\
+                (D,time(0,1,24,000000))\
+            ]\
+        )
+        self.assertEqual(A.getFastestLap(),time(0,1,21,300000))
+        self.assertEqual(B.getFastestLap(),time(0,1,21,450000))
+        self.assertEqual(C.getFastestLap(),time(0,1,20,984000))
+        self.assertEqual(D.getFastestLap(),time(0,1,23,000000))
+        self.assertEqual(E.getFastestLap(),time(0,1,21,484000))
+        self.assertEqual(A.getPoints(),9)
+        self.assertEqual(B.getPoints(),3)
+        self.assertEqual(C.getPoints(),6) # +1 for fastest lap
+        self.assertEqual(D.getPoints(),3)
+        self.assertEqual(E.getPoints(),3)
+
 ### HELPER FUNCTION ###
     def generateRaceResult1(self,tournament):
         A = tournament.players[0]

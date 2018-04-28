@@ -32,17 +32,17 @@ class TournamentGenerator():
         self.printRacesFlag = printRaces
 
     @classmethod
-    def init_GenerateTournament(cls, numberOfPlayers, playersPerRace, printRaces = False, points = ()):
-        tournament = Tournament.init_GeneratePlayers(numberOfPlayers,points)
+    def init_GenerateTournament(cls, numberOfPlayers, playersPerRace, printRaces = False, points = (), fastestLapPoint = 1):
+        tournament = Tournament.init_GeneratePlayers(numberOfPlayers,points,fastestLapPoint)
         return cls(tournament,numberOfPlayers,playersPerRace,printRaces)
     
     @classmethod
-    def init_fromFile(cls, playersPerRace, filename, printRaces = False, points = ()):
+    def init_fromFile(cls, playersPerRace, filename, printRaces = False, points = (), fastestLapPoint = 1):
         players = []
         fp = open(filename)
         for line in fp:
             players.append(Player(line[:-1]))
-        return cls(Tournament(players,points), len(players), playersPerRace, printRaces)
+        return cls(Tournament(players,points,fastestLapPoint), len(players), playersPerRace, printRaces)
 
     def printRace(self,race):
         if self.printRacesFlag:

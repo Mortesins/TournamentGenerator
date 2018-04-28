@@ -22,11 +22,11 @@ from cmd import Cmd
 import pickle
 
 from .tournamentGenerator import *
-from .helper import printRaces, convertRaceResultToRace, convertRaceResultsToRaces, sameRace
+from .helper import printRaces, convertRaceResultToRace, convertRaceResultsToRaces, sameRace, lapTimeToStr
 
 class TournamentShell(Cmd):
     'Class for tournament shell interfacet'
-    def __init__(self,tg=None,np=None,pr=None,pf=None,p=None):
+    def __init__(self,tg=None,np=None,pr=None,pf=None,p=None,flp=1):
         Cmd.__init__(self)
         self._tournamentGenerator = tg
         # number of players of the tournament needed for generation without file with player names
@@ -36,7 +36,8 @@ class TournamentShell(Cmd):
         # a tuple containing the points received based on placement
             # (4,3,2,1)
         self._points = p
-        
+        # point for fastest lap
+        self._fastestLapPoint = flp
         # filename containing the players name
         self._playerListFilename = pf
     
@@ -67,7 +68,6 @@ class TournamentShell(Cmd):
     
     ### creates pickle of tournamentGenerator as backup ##
     def do_backup(self,s):
-        self._backup(filename)
         if (s != ""):
             p = s.split()
             self._backup(p[0])
@@ -88,7 +88,7 @@ class TournamentShell(Cmd):
                 v = False
                 p = False
                 # parameters
-                p = s.split
+                p = s.split()
                 if "-v" in p:
                     v = True
                 if "--printRacesOnGenerate" in p:
@@ -158,8 +158,8 @@ class TournamentShell(Cmd):
         else:
             print("ERROR: race results not inserted")
 
-    def help_playRace(self,s):
-        print("USAGE: playRace RACENUMBER.")
+    def help_playRace(self):
+        print("USAGE: playRace RACENUMBER")
         print("Adds the result (including fastest time) of the race specified with the number.")
 
   ### GETTERS AND SETTERS ###
@@ -252,6 +252,28 @@ class TournamentShell(Cmd):
         print("EXAMPLE: setPoints (4,3,2,1)")
         print("\t would give 4 points to the first, 3 to the second, 2 to the third and 1 to the last")
         print("Sets the points awarded in each race.")
+    def do_setFastestLapPoint(self,s):
+        # check for positive integer
+        error = False
+        if (s != ""):
+            p = s.split()
+            try:
+                n = int(p[0])
+                # points must be positive
+                if (n < 0):
+                    error = True
+            except ValueError:
+                error = True
+        else: # if no parameters
+            error = True
+        if (not error):
+            self._fastestLapPoint = n
+            # write pickle backup
+            self._backup()
+        else:
+            print("Fastest lap point must be positive integer")
+    def help_setPlayersPerRace(self):
+        print("Sets the point awarded to the player who posts the fastest lap in the race")
   ###########################
   ### PRINT FUNCTIONS ###
     def do_printNumberOfPlayers(self,s):
@@ -265,14 +287,14 @@ class TournamentShell(Cmd):
         print("Player names list file: " + filename)
     def do_printRaces(self,s):
         self.printRaces()
-    def do_printRacesDoneCompact(self,s):
-        self.printRacesDoneCompact()
+    def do_printRacesDone(self,s):
+        self.printRacesDone()
     def do_printRacesToDo(self,s):
         self.printRacesToDo()
     def do_printPlayers(self,s):
         self.printPlayers()
-    def do_printRacesDone(self,s):
-        self.printRacesDone()
+    def do_printRaceResults(self,s):
+        self.printRaceResults()
     def do_printStanding(self,s):
         self.printStanding()
     def do_printFastestLapStanding(self,s):
@@ -342,6 +364,17 @@ class TournamentShell(Cmd):
         else:
             raise ValueError("Points must be a tuple of ints, like (4,3,2,1)")
     
+    @property
+    def fastestLapPoint(self):
+        return self._fastestLapPoint
+    
+    @fastestLapPoint.setter
+    def fastestLapPoint(self, value):
+        if (type(value) is not int) or (value < 0):
+            raise ValueError("Fastest lap point must be positive")
+        else:
+            self._fastestLapPoint = value
+    
     def generateTournament(self,verbose=False,printRacesOnGenerate=False):
         if (self._playersPerRace == None):
             raise ValueError("Players per race must be defined")
@@ -352,14 +385,14 @@ class TournamentShell(Cmd):
             # first try with file
             if (self._playerListFilename != None):
                 if os.path.isfile(self._playerListFilename) :
-                    self._tournamentGenerator = TournamentGenerator.init_fromFile(self._playersPerRace,self._playerListFilename,printRacesOnGenerate,self._points)
+                    self._tournamentGenerator = TournamentGenerator.init_fromFile(self._playersPerRace,self._playerListFilename,printRacesOnGenerate,self._points,self._fastestLapPoint)
                     # set numberOfPlayers as specified in file
                     self._numberOfPlayers = self._tournamentGenerator.tournament.getNumberOfPlayers()
                     tournamentGenerated = True
             # if no filename or file does not exist
             if (not tournamentGenerated):
                 if (self._numberOfPlayers  != None):
-                    self._tournamentGenerator = TournamentGenerator.init_GenerateTournament(self._numberOfPlayers,self._playersPerRace,printRacesOnGenerate,self._points)
+                    self._tournamentGenerator = TournamentGenerator.init_GenerateTournament(self._numberOfPlayers,self._playersPerRace,printRacesOnGenerate,self._points,self._fastestLapPoint)
                 else:
                     raise ValueError("Either players list filename or number of players must be defined")
         self._tournamentGenerator.generate2()
@@ -445,7 +478,7 @@ class TournamentShell(Cmd):
         print("RACES:")
         printRaces(self._tournamentGenerator.tournament.getRaces())
 
-    def printRacesDoneCompact(self):
+    def printRacesDone(self):
         print("RACES DONE:")
         printRaces(convertRaceResultsToRaces(self._tournamentGenerator.tournament.getRaceResults()))
 
@@ -464,15 +497,18 @@ class TournamentShell(Cmd):
             else:
                 print(str(i) + ".", player)
             i += 1
-    
-    def printRacesDone(self):
-        print("RACES DONE:")
+
+    def printRaceResults(self):
+        print("RACES RESULTS:")
         i = 1
         for race in self._tournamentGenerator.tournament.getRaceResults():
             print("\tRACE"+str(i)+":")
             j = 1
             for result in race:
-                print("\t\t" + str(j) + ". " + result[0].getName())
+                name = result[0].getName()
+                if (len(name) < 5):
+                    name += " "*(5-len(name))
+                print("\t\t" + str(j) + ". " + name + " \t" + lapTimeToStr(result[1]))
                 j+=1
             i+=1
 

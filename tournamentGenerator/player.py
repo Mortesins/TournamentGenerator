@@ -19,6 +19,8 @@
 from random import randint
 from datetime import time
 
+from .helper import lapTimeToStr
+
 class Player():
     'Player class'
     def __init__(self, name):
@@ -77,8 +79,7 @@ class Player():
     def getFastestLapPrintable(self):
         if self.fastestLap == None:
             return "None"
-        return self.fastestLap.strftime('%M:%S:%f')[1:-3]
-
+        return lapTimeToStr(self.fastestLap)
 
     def hasFaced(self, player):
         for p in self.facedPlayers:

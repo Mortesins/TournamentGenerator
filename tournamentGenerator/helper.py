@@ -57,3 +57,5 @@ def convertRaceResultsToRaces(raceResults):
         races.append(convertRaceResultToRace(raceResult))
     return races
 
+def lapTimeToStr(lapTime):
+    return lapTime.strftime('%M:%S:%f')[1:-3]
