@@ -21,14 +21,17 @@ import os.path
 from cmd import Cmd
 import pickle
 
-#from .tournamentGenerator import *
+from .tournament import *
+from .randomPlayerGenerator import RandomPlayerGenerator
+from .playerGeneratorFromFile import PlayerGeneratorFromFile
+from .raceGenerator import RaceGenerator
 from .helper import printRaces, convertRaceResultToRace, convertRaceResultsToRaces, sameRace, lapTimeToStr
 
 class TournamentShell(Cmd):
     'Class for tournament shell interfacet'
-    def __init__(self,tg=None,np=None,pr=None,pf=None,p=None,flp=1):
+    def __init__(self,t=None,np=None,pr=None,pf=None,p=None,flp=1):
         Cmd.__init__(self)
-        self._tournamentGenerator = tg
+        self._tournament = t
         # number of players of the tournament needed for generation without file with player names
         self._numberOfPlayers = np
         # number of players that participate in each race
@@ -43,12 +46,13 @@ class TournamentShell(Cmd):
     
     @classmethod
     def init_fromPickle(cls, filename):
-        tournamentGenerator = pickle.load(open(filename,"rb"))
+        tournament = pickle.load(open(filename,"rb"))
+        # get the first race to see how many players per race
         return cls(\
-            tournamentGenerator,\
-            tournamentGenerator.numberOfPlayers,\
-            tournamentGenerator.playersPerRace,\
-            tournamentGenerator.tournament.points\
+            tournament,\
+            tournament.getNumberOfPlayers(),\
+            len(tournament.getRace(0)),\
+            tournament.points\
         )
 
 ### CMD commands ###
@@ -74,7 +78,7 @@ class TournamentShell(Cmd):
         else:
             self._backup()
     def help_backup(self):
-        print("Creates pickle of tournamentGenerator as backup.")
+        print("Creates pickle of tournament as backup.")
         print("USAGE: backup [filename.p]")
     
     ### generate tournament ###
@@ -126,7 +130,7 @@ class TournamentShell(Cmd):
             while (incorrectNumber):
                 try:
                     raceNumber = int(raceNumberRaw)
-                    if ( (raceNumber > 0) and (raceNumber <= len(self._tournamentGenerator.tournament.getRacesToDo()) ) ):
+                    if ( (raceNumber > 0) and (raceNumber <= len(self._tournament.getRacesToDo()) ) ):
                         raceInserted = self.playRace(raceNumber)
                         # end loop
                         incorrectNumber = False
@@ -145,7 +149,7 @@ class TournamentShell(Cmd):
             p = s.split()
             try:
                 raceNumber = int(p[0])
-                if ( (raceNumber > 0) and (raceNumber <= len(self._tournamentGenerator.tournament.getRacesToDo()) ) ):
+                if ( (raceNumber > 0) and (raceNumber <= len(self._tournament.getRacesToDo()) ) ):
                     raceInserted = self.playRace(raceNumber)
                 else:
                     print("Wrong race number")
@@ -381,33 +385,38 @@ class TournamentShell(Cmd):
         elif (self._points == None):
             raise ValueError("Points must be defined")
         else:
-            tournamentGenerated = False
+            playerGenerator = None
             # first try with file
             if (self._playerListFilename != None):
                 if os.path.isfile(self._playerListFilename) :
-                    self._tournamentGenerator = TournamentGenerator.init_fromFile(self._playersPerRace,self._playerListFilename,printRacesOnGenerate,self._points,self._fastestLapPoint)
-                    # set numberOfPlayers as specified in file
-                    self._numberOfPlayers = self._tournamentGenerator.tournament.getNumberOfPlayers()
-                    tournamentGenerated = True
+                    playerGenerator = PlayerGeneratorFromFile(self._playerListFilename)
             # if no filename or file does not exist
-            if (not tournamentGenerated):
+            if (playerGenerator == None):
                 if (self._numberOfPlayers  != None):
-                    self._tournamentGenerator = TournamentGenerator.init_GenerateTournament(self._numberOfPlayers,self._playersPerRace,printRacesOnGenerate,self._points,self._fastestLapPoint)
+                    playerGenerator = RandomPlayerGenerator(self._numberOfPlayers)
                 else:
                     raise ValueError("Either players list filename or number of players must be defined")
-        self._tournamentGenerator.generate2()
+        
+        # generate tournament
+        self._tournament = Tournament.init_WithPlayerGenerator(playerGenerator,self._points,self._fastestLapPoint)
+        # in case tournament set from file
+        if (self._numberOfPlayers == None):
+            self._numberOfPlayers = self._tournament.getNumberOfPlayers()
+        # generate races
+        raceGenerator = RaceGenerator(self._playersPerRace,printRacesOnGenerate)
+        raceGenerator.generate_lowCostForPlayerWithLeastRaces(self._tournament)
         print("Tournament generated")
         if verbose:
-            self._tournamentGenerator.printRaces()
-            self._tournamentGenerator.printNumberOfRacesOfEachPlayer()
-            self._tournamentGenerator.printPlayersFacedByEachPlayer()
+            printRaces(self._tournament.getRaces())
+            self._tournament.printNumberOfRacesOfEachPlayer()
+            self._tournament.printPlayersFacedByEachPlayer()
             
     def playRace(self,raceNumber):
-        if ( (raceNumber < 1) and (raceNumber > len(self._tournamentGenerator.tournament.getRacesToDo())) ):
+        if ( (raceNumber < 1) and (raceNumber > len(self._tournament.getRacesToDo())) ):
             print("Wrong race number")
             return False
         i = raceNumber - 1
-        race = self._tournamentGenerator.tournament.getRaceToDo(i)
+        race = self._tournament.getRaceToDo(i)
         raceResult = []
         # positions entered, needed to check that the same players won't have same position
         positions = []
@@ -464,31 +473,31 @@ class TournamentShell(Cmd):
             fastestLap = time(0,minutes,seconds,milliseconds*1000) # *1000 because time needs microseconds
             # add race result
             raceResult.append([player,position,fastestLap])
-        self._tournamentGenerator.tournament.addRaceResult(raceResult)
+        self._tournament.addRaceResult(raceResult)
         return True
         
 
             
     def _backup(self,filename="tournament.p"):
         ''' creates a pickle as a backup '''
-        pickle.dump(self._tournamentGenerator,open(filename,"wb"))
+        pickle.dump(self._tournament,open(filename,"wb"))
         
 ### PRINT FUNCTIONS ###
     def printRaces(self):
         print("RACES:")
-        printRaces(self._tournamentGenerator.tournament.getRaces())
+        printRaces(self._tournament.getRaces())
 
     def printRacesDone(self):
         print("RACES DONE:")
-        printRaces(convertRaceResultsToRaces(self._tournamentGenerator.tournament.getRaceResults()))
+        printRaces(convertRaceResultsToRaces(self._tournament.getRaceResults()))
 
     def printRacesToDo(self):
         print("RACES TO DO:")
-        printRaces(self._tournamentGenerator.tournament.getRacesToDo())
+        printRaces(self._tournament.getRacesToDo())
 
     def printPlayers(self):
         print("PLAYERS:")
-        players = self._tournamentGenerator.tournament.players
+        players = self._tournament.players
         players.sort(key=lambda player : player.getName())
         i = 1
         for player in players:
@@ -501,7 +510,7 @@ class TournamentShell(Cmd):
     def printRaceResults(self):
         print("RACES RESULTS:")
         i = 1
-        for race in self._tournamentGenerator.tournament.getRaceResults():
+        for race in self._tournament.getRaceResults():
             print("\tRACE"+str(i)+":")
             j = 1
             for result in race:
@@ -514,10 +523,10 @@ class TournamentShell(Cmd):
 
     def printStanding(self):
         print("STANDINGS:")
-        standings = self._tournamentGenerator.tournament.getStandingsPrintable()
+        standings = self._tournament.getStandingsPrintable()
         # find max length of player name
         maxLength = 0
-        for player in self._tournamentGenerator.tournament.getPlayers():
+        for player in self._tournament.getPlayers():
             if (len(player.getName()) > maxLength):
                 maxLength = len(player.getName())
         # if max length name shorter than "PLAYER" than I take "PLAYER" length
@@ -545,10 +554,10 @@ class TournamentShell(Cmd):
 
     def printFastestLapStanding(self):
         print("FASTEST LAP STANDINGS:")
-        standings = self._tournamentGenerator.tournament.getFastestLapStandingPrintable()
+        standings = self._tournament.getFastestLapStandingPrintable()
         # find max length of player name
         maxLength = 0
-        for player in self._tournamentGenerator.tournament.getPlayers():
+        for player in self._tournament.getPlayers():
             if (len(player.getName()) > maxLength):
                 maxLength = len(player.getName())
         # if max length name shorter than "PLAYER" than I take "PLAYER" length
@@ -566,7 +575,7 @@ class TournamentShell(Cmd):
         print("+-"+"-"*maxLength+"-+----------+")
 
     def printFastestLap(self):
-        player = self._tournamentGenerator.tournament.getFastestLapPlayer()
+        player = self._tournament.getFastestLapPlayer()
         print("FASTEST LAP:")
         if (player != None):
             print("\t" + player.getName() + ": " + player.getFastestLapPrintable())
@@ -576,40 +585,40 @@ class TournamentShell(Cmd):
   # print functions for checking tournament
     def printNumberOfRacesOfEachPlayer(self):
         print("NUMBER OF RACES:")
-        self._tournamentGenerator.printNumberOfRacesOfEachPlayer()
+        self._tournament.printNumberOfRacesOfEachPlayer()
 
     def printPlayersFacedByEachPlayer(self):
         print("PLAYERS FACED BY EACH PLAYER:")
-        self._tournamentGenerator.printPlayersFacedByEachPlayer()
+        self._tournament.printPlayersFacedByEachPlayer()
 
   # print function for specific player
     def printPlayerNumberOfRaces(self,playerNumber):
         # playerNumber is printed on screen so it is index+1
-        player = self._tournamentGenerator.tournament.players[playerNumber - 1]
+        player = self._tournament.players[playerNumber - 1]
         print("NUMBER OF RACES FOR PLAYER: " + player.getName())
-        self._tournamentGenerator.printPlayerNumberOfRaces(player)
+        player.printNumberOfRaces()
 
     def printPlayerNumberOfRacesDone(self,playerNumber):
         # playerNumber is printed on screen so it is index+1
-        player = self._tournamentGenerator.tournament.players[playerNumber - 1]
+        player = self._tournament.players[playerNumber - 1]
         print("NUMBER OF RACES DONE BY PLAYER: " + player.getName())
         print(str(player.getRacesDone()))
         
     def printPlayerPlayersFaced(self,playerNumber):
         # playerNumber is printed on screen so it is index+1
-        player = self._tournamentGenerator.tournament.players[playerNumber - 1]
+        player = self._tournament.players[playerNumber - 1]
         print("PLAYERS FACED OF PLAYER: " + player.getName())
-        self._tournamentGenerator.printPlayerPlayersFaced(player)
+        player.printPlayersFaced()
 
     def printPlayerFastestLap(self,playerNumber):
         # playerNumber is printed on screen so it is index+1
-        player = self._tournamentGenerator.tournament.players[playerNumber - 1]
+        player = self._tournament.players[playerNumber - 1]
         print("FASTEST LAP OF PLAYER: " + player.getName())
         print(player.getFastestLapPrintable())
 
     def printPlayerPoints(self,playerNumber):
         # playerNumber is printed on screen so it is index+1
-        player = self._tournamentGenerator.tournament.players[playerNumber - 1]
+        player = self._tournament.players[playerNumber - 1]
         print("POINTS OF PLAYER: " + player.getName())
         print(str(player.getPoints()))
 #######################
