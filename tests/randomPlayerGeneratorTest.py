@@ -1,0 +1,43 @@
+########################################################################
+# Software for generating races of a tournament
+# Copyright (C) 2018 Axel Bernardinis <abernardinis@hotmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+########################################################################
+
+import unittest
+from tournamentGenerator.randomPlayerGenerator import *
+
+class RandomPlayerGeneratorTest(unittest.TestCase):
+    
+    def test_1(self):
+        playerGenerator = RandomPlayerGenerator(5)
+        players = playerGenerator.generate()
+        self.assertEqual(len(players),5)
+        self.assertEqual(players[0].getName(),"A")
+        self.assertEqual(players[1].getName(),"B")
+        self.assertEqual(players[2].getName(),"C")
+        self.assertEqual(players[3].getName(),"D")
+        self.assertEqual(players[4].getName(),"E")
+        playerGenerator = RandomPlayerGenerator(26)
+        players = playerGenerator.generate()
+        self.assertEqual(len(players),26)
+        self.assertEqual(players[0].getName(),"A")
+        self.assertEqual(players[25].getName(),"Z")
+        playerGenerator = RandomPlayerGenerator(104)
+        players = playerGenerator.generate()
+        self.assertEqual(len(players),104)
+        self.assertEqual(players[0].getName(),"AA")
+        self.assertEqual(players[50].getName(),"BY")
+        self.assertEqual(players[103].getName(),"DZ")

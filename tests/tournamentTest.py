@@ -18,6 +18,7 @@
 
 import unittest
 from tournamentGenerator.tournament import *
+from tournamentGenerator.randomPlayerGenerator import RandomPlayerGenerator
 
 from random import shuffle
 
@@ -88,26 +89,8 @@ class TournamentTest(unittest.TestCase):
         self.assertEqual(b.numberOfTimesAlreadyFaced(c),1)
         self.assertEqual(c.numberOfTimesAlreadyFaced(b),1)
         
-    def test_init_GeneratePlayers(self):
-        tournament = Tournament.init_GeneratePlayers(5)
-        self.assertEqual(len(tournament.players),5)
-        self.assertEqual(tournament.players[0].getName(),"A")
-        self.assertEqual(tournament.players[1].getName(),"B")
-        self.assertEqual(tournament.players[2].getName(),"C")
-        self.assertEqual(tournament.players[3].getName(),"D")
-        self.assertEqual(tournament.players[4].getName(),"E")
-        tournament = Tournament.init_GeneratePlayers(26)
-        self.assertEqual(len(tournament.players),26)
-        self.assertEqual(tournament.players[0].getName(),"A")
-        self.assertEqual(tournament.players[25].getName(),"Z")
-        tournament = Tournament.init_GeneratePlayers(104)
-        self.assertEqual(len(tournament.players),104)
-        self.assertEqual(tournament.players[0].getName(),"AA")
-        self.assertEqual(tournament.players[50].getName(),"BY")
-        self.assertEqual(tournament.players[103].getName(),"DZ")
-        
     def test_raceExists(self):
-        tournament = Tournament.init_GeneratePlayers(5)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5))
         race1 = [tournament.players[0],tournament.players[1],tournament.players[2]]
         race2 = [tournament.players[3],tournament.players[4],tournament.players[0]]
         race1copy = list(race1)
@@ -127,13 +110,13 @@ class TournamentTest(unittest.TestCase):
     def test_playersSameNumberOfRaces(self):
       # three players per race
         # 3 players (ABC)
-        tournament = Tournament.init_GeneratePlayers(3)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(3))
         # add ABC
         tournament.addRace([tournament.players[0],tournament.players[1],tournament.players[2]])
         # ABC, so true
         self.assertTrue(tournament.playersSameNumberOfRaces())
         # 4 players (ABCD)
-        tournament = Tournament.init_GeneratePlayers(4)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(4))
         # add ABC
         tournament.addRace([tournament.players[0],tournament.players[1],tournament.players[2]])
         # only ABC, so false
@@ -152,7 +135,7 @@ class TournamentTest(unittest.TestCase):
         self.assertTrue(tournament.playersSameNumberOfRaces())
       # two players per race
         # 3 players (ABC)
-        tournament = Tournament.init_GeneratePlayers(3)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(3))
         # add AB
         tournament.addRace([tournament.players[0],tournament.players[1]])
         # only AB, so false
@@ -167,7 +150,7 @@ class TournamentTest(unittest.TestCase):
         self.assertTrue(tournament.playersSameNumberOfRaces())
       # four players per race
         # 8 players (ABCDEFGH)
-        tournament = Tournament.init_GeneratePlayers(8)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(8))
         # add ABCD
         tournament.addRace([tournament.players[0],tournament.players[1],tournament.players[2],tournament.players[3]])
         # only ABCD, so false
@@ -180,13 +163,13 @@ class TournamentTest(unittest.TestCase):
     def test_somebodyDidNotFaceEveryone(self):
       # three players per race
         # 3 players (ABC)
-        tournament = Tournament.init_GeneratePlayers(3)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(3))
         # add ABC
         tournament.addRace([tournament.players[0],tournament.players[1],tournament.players[2]])
         # ABC, so everyone faced everyone, so false
         self.assertFalse(tournament.somebodyDidNotFaceEveryone())
         # 4 players (ABCD)
-        tournament = Tournament.init_GeneratePlayers(4)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(4))
         # add ABC
         tournament.addRace([tournament.players[0],tournament.players[1],tournament.players[2]])
         # only ABC, so nobody faced D, so true
@@ -205,7 +188,7 @@ class TournamentTest(unittest.TestCase):
         self.assertFalse(tournament.somebodyDidNotFaceEveryone())
     # two players per race
         # 3 players (ABC)
-        tournament = Tournament.init_GeneratePlayers(3)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(3))
         # add AB
         tournament.addRace([tournament.players[0],tournament.players[1]])
         # only AB, so C did not face A and B, so true
@@ -221,7 +204,7 @@ class TournamentTest(unittest.TestCase):
 
     def test_averageNumberOfRaces(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5))
         # add ABC
         tournament.addRace([tournament.players[0],tournament.players[1],tournament.players[2]])
         self.assertEqual(tournament.averageNumberOfRaces(),3.0/5)
@@ -273,7 +256,7 @@ class TournamentTest(unittest.TestCase):
                             BE,ED
         '''
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5))
         A = tournament.players[0]
         B = tournament.players[1]
         C = tournament.players[2]
@@ -304,7 +287,7 @@ class TournamentTest(unittest.TestCase):
 
     def test_getPlayerThatHasntFacedEveryone(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5))
         A = tournament.players[0]
         B = tournament.players[1]
         C = tournament.players[2]
@@ -329,7 +312,7 @@ class TournamentTest(unittest.TestCase):
 
     def test_getRandomPlayerThatHasntFacedEveryone(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5))
         A = tournament.players[0]
         B = tournament.players[1]
         C = tournament.players[2]
@@ -354,7 +337,7 @@ class TournamentTest(unittest.TestCase):
 
     def test_addRaceResult(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5),(4,3,2,1))
         A = tournament.players[0]
         B = tournament.players[1]
         C = tournament.players[2]
@@ -418,7 +401,7 @@ class TournamentTest(unittest.TestCase):
 
     def test_addRaceResult_lessPoints(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5,(4,3,2))
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5),(4,3,2))
         A = tournament.players[0]
         B = tournament.players[1]
         C = tournament.players[2]
@@ -482,7 +465,7 @@ class TournamentTest(unittest.TestCase):
 
     def test_addRaceResultMorePoints(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5,(25,18,15,12,10,8,6,4,2,1))
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5),(25,18,15,12,10,8,6,4,2,1))
         A = tournament.players[0]
         B = tournament.players[1]
         C = tournament.players[2]
@@ -546,7 +529,7 @@ class TournamentTest(unittest.TestCase):
 
     def test_addRaceResult_differentFastestLapPoint(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1),2)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5),(4,3,2,1),2)
         A = tournament.players[0]
         B = tournament.players[1]
         C = tournament.players[2]
@@ -657,7 +640,7 @@ class TournamentTest(unittest.TestCase):
 
     def test_getFastestLapTime(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5),(4,3,2,1))
         self.generateRaceResult1(tournament)
         self.assertEqual(tournament.getFastestLapTime(),time(0,1,21,340000))
         self.generateRaceResult2(tournament)
@@ -665,7 +648,7 @@ class TournamentTest(unittest.TestCase):
 
     def test_getFastestLapPlayer(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5),(4,3,2,1))
         self.generateRaceResult1(tournament)
         A = tournament.players[0]
         B = tournament.players[1]
@@ -678,7 +661,7 @@ class TournamentTest(unittest.TestCase):
 
     def test_getFastestLapStanding(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5),(4,3,2,1))
         self.generateRaceResult1(tournament)
         A = tournament.players[0]
         B = tournament.players[1]
@@ -691,7 +674,7 @@ class TournamentTest(unittest.TestCase):
 
     def test_getStandings(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5),(4,3,2,1))
         self.generateRaceResult1(tournament)
         A = tournament.players[0]
         B = tournament.players[1]
@@ -705,7 +688,7 @@ class TournamentTest(unittest.TestCase):
 
     def test_getFastestLapStandingPrintable(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5),(4,3,2,1))
         self.generateRaceResult1(tournament)
         A = tournament.players[0]
         B = tournament.players[1]
@@ -737,7 +720,7 @@ class TournamentTest(unittest.TestCase):
     
     def test_getStandingsPrintable(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5),(4,3,2,1))
         self.generateRaceResult1(tournament)
         A = tournament.players[0]
         B = tournament.players[1]
@@ -769,7 +752,7 @@ class TournamentTest(unittest.TestCase):
     
     def test_getRacesToDo1(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5),(4,3,2,1))
         A = tournament.players[0]
         B = tournament.players[1]
         C = tournament.players[2]
@@ -849,7 +832,7 @@ class TournamentTest(unittest.TestCase):
 
     def test_getRacesToDo2(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5,(4,3,2,1))
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5),(4,3,2,1))
         A = tournament.players[0]
         B = tournament.players[1]
         C = tournament.players[2]
