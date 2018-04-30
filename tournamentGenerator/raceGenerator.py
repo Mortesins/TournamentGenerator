@@ -23,44 +23,25 @@ from .tournament import *
 from .raceCosts import *
 from .helper import removeList2fromList1, printRaces
 
-class TournamentGenerator():
-    'Tournament generator class, containing tournament'
-    def __init__(self, tournament, numberOfPlayers, playersPerRace, printRaces = False):
-        self.tournament = tournament
-        self.numberOfPlayers = numberOfPlayers
+class RaceGenerator():
+    'Race generator class'
+    def __init__(self, playersPerRace, printRaces = False):
         self.playersPerRace = playersPerRace
         self.printRacesFlag = printRaces
 
-    @classmethod
-    def init_GenerateTournament(cls, numberOfPlayers, playersPerRace, printRaces = False, points = (), fastestLapPoint = 1):
-        tournament = Tournament.init_GeneratePlayers(numberOfPlayers,points,fastestLapPoint)
-        return cls(tournament,numberOfPlayers,playersPerRace,printRaces)
-    
-    @classmethod
-    def init_fromFile(cls, playersPerRace, filename, printRaces = False, points = (), fastestLapPoint = 1):
-        players = []
-        fp = open(filename)
-        for line in fp:
-            players.append(Player(line[:-1]))
-        return cls(Tournament(players,points,fastestLapPoint), len(players), playersPerRace, printRaces)
-
-    def printRace(self,race):
-        if self.printRacesFlag:
-            print(race)
-
-    def generate_randomLowCost(self):
+    def generate_randomLowCost(self,tournament):
         '''
             generates by adding least cost races 
             until all players have faced each other
                 every player same number of races
         '''
         # while at least a player hasn't faced everyone and not all players have same number of races
-        while ( not(self.tournament.playersSameNumberOfRaces()) or (self.tournament.somebodyDidNotFaceEveryone()) ):
-            race = leastExpensiveRace(self.tournament.players,self.playersPerRace,self.tournament.averageNumberOfRaces())
-            self.tournament.addRace(race)
+        while ( not(tournament.playersSameNumberOfRaces()) or (tournament.somebodyDidNotFaceEveryone()) ):
+            race = leastExpensiveRace(tournament.players,self.playersPerRace,tournament.averageNumberOfRaces())
+            tournament.addRace(race)
             self.printRace(race)
 
-    def generate_AllPlayersFaceEachOther(self):
+    def generate_AllPlayersFaceEachOther(self,tournament):
         '''
             generates by:
             until all players have faced each other:
@@ -70,16 +51,16 @@ class TournamentGenerator():
                     (example: 4 players per race, player has only 1 player not met, so get at least 2 from least number of races)
         '''
         # while at least a player hasn't faced everyone
-        while (self.tournament.somebodyDidNotFaceEveryone()):
-            player = self.tournament.getPlayerThatHasntFacedEveryone()
-            playersNotFaced = player.playersNotFaced(self.tournament.getPlayers())
+        while (tournament.somebodyDidNotFaceEveryone()):
+            player = tournament.getPlayerThatHasntFacedEveryone()
+            playersNotFaced = player.playersNotFaced(tournament.getPlayers())
             # while still some players to be faced
             while (len(playersNotFaced) != 0):
                 # if number of playersNotFaced equal to playersPerRace - 1 or more
                     # find combination of (playersPerRace - 1) players, that along with player gives race with least cost
                 if ( len(playersNotFaced) > (self.playersPerRace - 1) ):
-                    race = leastExpensiveRace(playersNotFaced,self.playersPerRace,self.tournament.averageNumberOfRaces(),[player])
-                    self.tournament.addRace(race)
+                    race = leastExpensiveRace(playersNotFaced,self.playersPerRace,tournament.averageNumberOfRaces(),[player])
+                    tournament.addRace(race)
                     self.printRace(race)
                 # if number of playersNotFaced equal to playersPerRace - 1 
                     # then by adding player I have exactly playersPerRace number of players
@@ -88,7 +69,7 @@ class TournamentGenerator():
                     # append player and add race
                     race = list(playersNotFaced)
                     race.append(player)
-                    self.tournament.addRace(race)
+                    tournament.addRace(race)
                     self.printRace(race)
                 # playersNotFaced not enough for a race, so I fix playerNotFaced and player, 
                     # and get the remaining players from playerWithLeastRaces
@@ -101,75 +82,51 @@ class TournamentGenerator():
                     # add at least n players, where n is needed to reach playerPerRace
                         # I actually get least playerPerRace number of players, and then I remove fixedPlayers 
                             # since fixedPlayers could be in playersWithLeastRaces
-                    otherPlayers = atLeastNplayersWithLeastRaces(self.playersPerRace,self.tournament.getPlayers())
+                    otherPlayers = atLeastNplayersWithLeastRaces(self.playersPerRace,tournament.getPlayers())
                     removeList2fromList1(otherPlayers,fixedPlayers)
                     race = leastExpensiveRace(\
                             otherPlayers,\
                             self.playersPerRace,\
-                            self.tournament.averageNumberOfRaces(),\
+                            tournament.averageNumberOfRaces(),\
                             fixedPlayers)
-                    self.tournament.addRace(race)
+                    tournament.addRace(race)
                     self.printRace(race)
-                playersNotFaced = player.playersNotFaced(self.tournament.getPlayers())
+                playersNotFaced = player.playersNotFaced(tournament.getPlayers())
         # 2) until every player same number of race
-        # while ( not(self.tournament.playersSameNumberOfRaces()) ):
-        #    self.tournament.addRace(leastExpensiveRace(self.tournament.players,self.playersPerRace,self.tournament.averageNumberOfRaces()))
+        # while ( not(tournament.playersSameNumberOfRaces()) ):
+        #    tournament.addRace(leastExpensiveRace(tournament.players,self.playersPerRace,tournament.averageNumberOfRaces()))
    
-    def generate_AllPlayersSameNumberOfRaces(self):
+    def generate_AllPlayersSameNumberOfRaces(self,tournament):
         '''
             generates by:
                 until every player same number of races
                     add least costly races
         '''
         # until every player same number of race
-        while ( not(self.tournament.playersSameNumberOfRaces()) ):
+        while ( not(tournament.playersSameNumberOfRaces()) ):
             # get a random player with least number of races
-            player = playerWithLeastRaces(self.tournament.getPlayers())
+            player = playerWithLeastRaces(tournament.getPlayers())
             # add least cost race by fixing player, and remaining playersWithLeastRaces
-            otherPlayers = atLeastNplayersWithLeastRaces(self.playersPerRace,self.tournament.getPlayers())
+            otherPlayers = atLeastNplayersWithLeastRaces(self.playersPerRace,tournament.getPlayers())
             removeList2fromList1(otherPlayers,[player])
             race = leastExpensiveRace(\
                         otherPlayers,\
                         self.playersPerRace,\
-                        self.tournament.averageNumberOfRaces(),\
+                        tournament.averageNumberOfRaces(),\
                         [player])
-            self.tournament.addRace(race)
+            tournament.addRace(race)
             self.printRace(race)
+       
+    def printRace(self,race):
+        if self.printRacesFlag:
+            print(race)
             
-    def generate1(self):
-        self.generate_AllPlayersFaceEachOther()
-        self.generate_randomLowCost()
+    def generate_randomUntilSameNumberOfRaces(self,tournament):
+        self.generate_AllPlayersFaceEachOther(tournament)
+        self.generate_randomLowCost(tournament)
 
-    def generate2(self):
-        self.generate_AllPlayersFaceEachOther()
-        self.generate_AllPlayersSameNumberOfRaces()
+    def generate_lowCostForPlayerWithLeastRaces(self, tournament):
+        self.generate_AllPlayersFaceEachOther(tournament)
+        self.generate_AllPlayersSameNumberOfRaces(tournament)
 
-    def printRaces(self):
-        printRaces(self.tournament.getRaces())
 
-    def printNumberOfRacesOfEachPlayer(self):
-        players = self.tournament.getPlayers()
-        players.sort(key=lambda player : player.getName())
-        for player in players:
-            self.printPlayerNumberOfRaces(player)
-            #print(str(player) + ":" + str(player.getRaces()))
-
-    def printPlayerNumberOfRaces(self,player):
-        print(str(player) + ":" + str(player.getRaces()))
-
-    def printPlayersFacedByEachPlayer(self):
-        players = self.tournament.getPlayers()
-        players.sort(key=lambda player : player.getName())
-        for player in players:
-            self.printPlayerPlayersFaced(player)
-
-    def printPlayerPlayersFaced(self,player):
-        stringFacedPlayers = "["
-        facedPlayers = player.getFacedPlayers()
-        facedPlayers.sort(key=lambda player : player.getName())
-        for facedPlayer in facedPlayers:
-            stringFacedPlayers += ( str(facedPlayer) + "," )
-        # eliminate last comma
-        stringFacedPlayers = stringFacedPlayers[:-1]
-        stringFacedPlayers += "]"
-        print(str(player) + ":" + stringFacedPlayers)

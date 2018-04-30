@@ -18,7 +18,8 @@
 
 import sys
 
-from tournamentGenerator import TournamentGenerator
+from tournamentGenerator import RaceGenerator, Tournament, RandomPlayerGenerator, PlayerGeneratorFromFile
+from tournamentGenerator.helper import printRaces
 
 if __name__ == '__main__':
     if len(sys.argv) == 4:
@@ -38,11 +39,16 @@ if __name__ == '__main__':
         filename = sys.argv[2]
     
     if numberOfPlayers == 0:
-        tournament = TournamentGenerator.init_fromFile(playersPerRace,filename,debug)
+        playerGenerator = PlayerGeneratorFromFile(filename)
     else:
-        tournament = TournamentGenerator.init_GenerateTournament(numberOfPlayers,playersPerRace,False)
+        playerGenerator = RandomPlayerGenerator(numberOfPlayers)
     
-    tournament.generate2()
-    tournament.printRaces()
+    tournament = Tournament.init_WithPlayerGenerator(playerGenerator)
+    
+    raceGenerator = RaceGenerator(playersPerRace,debug)
+    raceGenerator.generate_lowCostForPlayerWithLeastRaces(tournament)
+    
+    # debug
+    printRaces(tournament.getRaces())
     tournament.printNumberOfRacesOfEachPlayer()
     tournament.printPlayersFacedByEachPlayer()

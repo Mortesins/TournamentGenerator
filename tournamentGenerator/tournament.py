@@ -16,9 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 ########################################################################
 
-from itertools import product,combinations
-from math import ceil,log
-from string import ascii_uppercase
+from itertools import combinations
 from random import randint
 from datetime import time
 
@@ -46,27 +44,9 @@ class Tournament():
         self.standingsFastestLap = []
 
     @classmethod
-    def init_GeneratePlayers(cls, numberOfPlayers, points=(), pointsFastestLap=1):
-        players = []
-        letters = list(ascii_uppercase)
-        # how many letters needed for the number of players
-            # 1 letter, 26 players, 2 letters 26*26 players
-            # take the logarithm base 26, and then get the nearest higher integer
-        numberOfLetters = int(ceil(log(numberOfPlayers,26)))
-        i = 0
-        # end when added numberOfPlayers
-        for nameTuple in product(letters,repeat=numberOfLetters):
-            # the name is ('A','A','A'), so I need to convert to string
-            name = ""
-            for j in range(0,numberOfLetters):
-                name = name + nameTuple[j]
-            if i < numberOfPlayers:
-                players.append(Player(name))
-                i += 1
-            else:
-                break
-        return cls(players,points,pointsFastestLap)
-
+    def init_WithPlayerGenerator(cls, playerGenerator, points=(), pointsFastestLap=1):
+        return cls(playerGenerator.generate(),points,pointsFastestLap)
+    
     def addRace(self,race):
         # race must be a list or tuple of Player
         if ( (isinstance(race,list) or isinstance(race,tuple)) and isinstance(race[0],Player) ):
@@ -303,3 +283,19 @@ class Tournament():
                 if sameRace(raceResult,race):
                     racesToRemove.append(race)
         removeList2fromList1(self.racesToDo,racesToRemove)
+
+### PRINT FUNCTIONS ###
+    ### PRINT CHECKS ###
+    def printNumberOfRacesOfEachPlayer(self):
+        players = list(self.players)
+        players.sort(key=lambda player : player.getName())
+        for player in players:
+            player.printNumberOfRaces()
+
+    def printPlayersFacedByEachPlayer(self):
+        players = list(self.players)
+        players.sort(key=lambda player : player.getName())
+        for player in players:
+            player.printPlayersFaced()
+    ####################
+#######################

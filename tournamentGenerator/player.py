@@ -49,7 +49,7 @@ class Player():
         return self.races
 
     def getFacedPlayers(self):
-        return self.facedPlayers
+        return list(self.facedPlayers)
 
     def getName(self):
         return self.name
@@ -103,6 +103,22 @@ class Player():
             if not self.hasFaced(player) and self != player:
                 listPlayersNotFaced.append(player)
         return listPlayersNotFaced
+
+### PRINT FUNCTIONS ###
+    def printNumberOfRaces(self):
+        print(str(self) + ":" + str(self.races))
+    
+    def printPlayersFaced(self):
+        stringFacedPlayers = "["
+        facedPlayers = list(self.facedPlayers)
+        facedPlayers.sort(key=lambda player : player.getName())
+        for facedPlayer in facedPlayers:
+            stringFacedPlayers += ( str(facedPlayer) + "," )
+        # eliminate last comma
+        stringFacedPlayers = stringFacedPlayers[:-1]
+        stringFacedPlayers += "]"
+        print(str(self) + ":" + stringFacedPlayers)
+#######################
 
 
 def playersFaceEachOther(player1, player2):

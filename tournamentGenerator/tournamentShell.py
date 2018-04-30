@@ -21,7 +21,7 @@ import os.path
 from cmd import Cmd
 import pickle
 
-from .tournamentGenerator import *
+#from .tournamentGenerator import *
 from .helper import printRaces, convertRaceResultToRace, convertRaceResultsToRaces, sameRace, lapTimeToStr
 
 class TournamentShell(Cmd):
