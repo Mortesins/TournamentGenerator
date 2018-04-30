@@ -25,7 +25,7 @@ from .tournamentGenerator import *
 from .helper import printRaces, convertRaceResultToRace, convertRaceResultsToRaces, sameRace, lapTimeToStr
 
 class TournamentShell(Cmd):
-    'Class for tournament shell interfacet'
+    'Class for tournament shell interface'
     def __init__(self,tg=None,np=None,pr=None,pf=None,p=None,flp=1):
         Cmd.__init__(self)
         self._tournamentGenerator = tg
