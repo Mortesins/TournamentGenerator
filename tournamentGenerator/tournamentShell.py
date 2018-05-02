@@ -29,7 +29,7 @@ from .helper import printRaces, convertRaceResultToRace, convertRaceResultsToRac
 
 class TournamentShell(Cmd):
     'Class for tournament shell interface'
-    def __init__(self,t=None,np=None,pr=None,pf=None,p=None,flp=1):
+    def __init__(self,t=None,np=None,pr=None,p=None,pf=None,flp=1):
         Cmd.__init__(self)
         self._tournament = t
         # number of players of the tournament needed for generation without file with player names
@@ -289,6 +289,8 @@ class TournamentShell(Cmd):
     def do_printPlayerListFilename(self,s):
         filename = str(self._playerListFilename)
         print("Player names list file: " + filename)
+    def do_printPoints(self,s):
+        print("Points: " + str(self._points))
     def do_printRaces(self,s):
         self.printRaces()
     def do_printRacesDone(self,s):
