@@ -109,12 +109,12 @@ class Tournament():
         for player in self.players:
             # first run, so I store the number of races of first player
             if numberOfRaces == None:
-                numberOfRaces = player.getRaces()
+                numberOfRaces = player.races
             else:
                 # check if current player has same number of races as the first
                     # if one player does not have the same number of races as the first, 
                     #   then all players can't have same number of races
-                if numberOfRaces != player.getRaces():
+                if numberOfRaces != player.races:
                     return False
         # if all players have same number of races as first player, 
         # then everyone has same number of races
@@ -153,7 +153,7 @@ class Tournament():
     def averageNumberOfRaces(self):
         mean = 0.0
         for player in self.players:
-            mean += player.getRaces() 
+            mean += player.races 
         return mean / len(self.players)
 
     def costOfRace(self,race):
@@ -186,8 +186,8 @@ class Tournament():
           # set fastest lap time of each player
             # if player has not fastest time
             # or fastest time of this race better than previous fastest time
-            if ( (resultsTuple[0].getFastestLap() == None) or (resultsTuple[2] < resultsTuple[0].getFastestLap()) ): 
-                resultsTuple[0].setFastestLap(resultsTuple[2])
+            if ( (resultsTuple[0].fastestLap == None) or (resultsTuple[2] < resultsTuple[0].fastestLap) ): 
+                resultsTuple[0].fastestLap = resultsTuple[2]
           # add race done
             resultsTuple[0].addRaceDone()
           # append (player,time)
@@ -207,22 +207,22 @@ class Tournament():
             self.standingsFastestLap = list(self.players)
             i = 0
             while i < len(self.standingsFastestLap):
-                if (self.standingsFastestLap[i].getFastestLap() == None):
+                if (self.standingsFastestLap[i].fastestLap == None):
                     self.standingsFastestLap.pop(i)
                 else:
                     i += 1
-        self.standingsFastestLap.sort(key=lambda player : player.getFastestLap())
+        self.standingsFastestLap.sort(key=lambda player : player.fastestLap)
 
     def _calculateStandings(self):
         ''' calculates and stores players ordered by points '''
-        self.standings.sort(key=lambda player : player.getPoints(),reverse=True)
+        self.standings.sort(key=lambda player : player.points,reverse=True)
 
     def getFastestLapTime(self):
         self._calculateStandingsFastestLap()
         if (len(self.standingsFastestLap) == 0):
             return None
         else:
-            return self.standingsFastestLap[0].getFastestLap()
+            return self.standingsFastestLap[0].fastestLap
 
     def getFastestLapPlayer(self):
         self._calculateStandingsFastestLap()
@@ -243,7 +243,7 @@ class Tournament():
         for player in self.standingsFastestLap:
             result.append(\
                 (\
-                    player.getName(),\
+                    player.name,\
                     player.getFastestLapPrintable()\
                 )\
             )
@@ -261,9 +261,9 @@ class Tournament():
         for player in self.standings:
             result.append(\
                 (\
-                    player.getName(),\
-                    player.getRacesDone(),\
-                    player.getPoints()\
+                    player.name,\
+                    player.racesDone,\
+                    player.points\
                 )\
             )
         return result
@@ -288,13 +288,13 @@ class Tournament():
     ### PRINT CHECKS ###
     def printNumberOfRacesOfEachPlayer(self):
         players = list(self.players)
-        players.sort(key=lambda player : player.getName())
+        players.sort(key=lambda player : player.name)
         for player in players:
             player.printNumberOfRaces()
 
     def printPlayersFacedByEachPlayer(self):
         players = list(self.players)
-        players.sort(key=lambda player : player.getName())
+        players.sort(key=lambda player : player.name)
         for player in players:
             player.printPlayersFaced()
     ####################

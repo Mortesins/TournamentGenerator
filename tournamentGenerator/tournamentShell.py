@@ -423,7 +423,7 @@ class TournamentShell(Cmd):
         # positions entered, needed to check that the same players won't have same position
         positions = []
         for player in race:
-            print(player.getName() + ": ")
+            print(player.name + ": ")
             # get position
             positionRaw = input("\tPosition: ")
             # quit playRace
@@ -500,7 +500,7 @@ class TournamentShell(Cmd):
     def printPlayers(self):
         print("PLAYERS:")
         players = self._tournament.players
-        players.sort(key=lambda player : player.getName())
+        players.sort(key=lambda player : player.name)
         i = 1
         for player in players:
             if (i < 10):
@@ -516,7 +516,7 @@ class TournamentShell(Cmd):
             print("\tRACE"+str(i)+":")
             j = 1
             for result in race:
-                name = result[0].getName()
+                name = result[0].name
                 if (len(name) < 5):
                     name += " "*(5-len(name))
                 print("\t\t" + str(j) + ". " + name + " \t" + lapTimeToStr(result[1]))
@@ -529,8 +529,8 @@ class TournamentShell(Cmd):
         # find max length of player name
         maxLength = 0
         for player in self._tournament.getPlayers():
-            if (len(player.getName()) > maxLength):
-                maxLength = len(player.getName())
+            if (len(player.name) > maxLength):
+                maxLength = len(player.name)
         # if max length name shorter than "PLAYER" than I take "PLAYER" length
         if maxLength < 6:
             maxLength = 6
@@ -560,8 +560,8 @@ class TournamentShell(Cmd):
         # find max length of player name
         maxLength = 0
         for player in self._tournament.getPlayers():
-            if (len(player.getName()) > maxLength):
-                maxLength = len(player.getName())
+            if (len(player.name) > maxLength):
+                maxLength = len(player.name)
         # if max length name shorter than "PLAYER" than I take "PLAYER" length
         if maxLength < 6:
             maxLength = 6
@@ -580,7 +580,7 @@ class TournamentShell(Cmd):
         player = self._tournament.getFastestLapPlayer()
         print("FASTEST LAP:")
         if (player != None):
-            print("\t" + player.getName() + ": " + player.getFastestLapPrintable())
+            print("\t" + player.name + ": " + player.getFastestLapPrintable())
         else:
             print("No time")
 
@@ -597,32 +597,32 @@ class TournamentShell(Cmd):
     def printPlayerNumberOfRaces(self,playerNumber):
         # playerNumber is printed on screen so it is index+1
         player = self._tournament.players[playerNumber - 1]
-        print("NUMBER OF RACES FOR PLAYER: " + player.getName())
+        print("NUMBER OF RACES FOR PLAYER: " + player.name)
         player.printNumberOfRaces()
 
     def printPlayerNumberOfRacesDone(self,playerNumber):
         # playerNumber is printed on screen so it is index+1
         player = self._tournament.players[playerNumber - 1]
-        print("NUMBER OF RACES DONE BY PLAYER: " + player.getName())
-        print(str(player.getRacesDone()))
+        print("NUMBER OF RACES DONE BY PLAYER: " + player.name)
+        print(str(player.racesDone))
         
     def printPlayerPlayersFaced(self,playerNumber):
         # playerNumber is printed on screen so it is index+1
         player = self._tournament.players[playerNumber - 1]
-        print("PLAYERS FACED OF PLAYER: " + player.getName())
+        print("PLAYERS FACED OF PLAYER: " + player.name)
         player.printPlayersFaced()
 
     def printPlayerFastestLap(self,playerNumber):
         # playerNumber is printed on screen so it is index+1
         player = self._tournament.players[playerNumber - 1]
-        print("FASTEST LAP OF PLAYER: " + player.getName())
+        print("FASTEST LAP OF PLAYER: " + player.name)
         print(player.getFastestLapPrintable())
 
     def printPlayerPoints(self,playerNumber):
         # playerNumber is printed on screen so it is index+1
         player = self._tournament.players[playerNumber - 1]
-        print("POINTS OF PLAYER: " + player.getName())
-        print(str(player.getPoints()))
+        print("POINTS OF PLAYER: " + player.name)
+        print(str(player.points))
 #######################
 
     def _printPlayerStat(self,parameterString,function):

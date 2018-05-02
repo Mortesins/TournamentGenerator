@@ -31,7 +31,7 @@ def costOfRace(race,averageNumberOfRaces):
     cost = 0
     # costs for differentials
     for player in race:
-        cost += (player.getRaces() + 1) - averageNumberOfRaces # +1 because future races including this one
+        cost += (player.races + 1) - averageNumberOfRaces # +1 because future races including this one
     # costs for refacing
         # for each couple of players facing each other (use combinations)
             # example: ABC -> AB,AC,BC
