@@ -25,8 +25,8 @@ from .helper import removeList2fromList1, printRaces
 class RaceGenerator():
     'Race generator class'
     def __init__(self, playersPerRace, printRaces = False):
-        self.playersPerRace = playersPerRace
-        self.printRacesFlag = printRaces
+        self._playersPerRace = playersPerRace
+        self._printRacesFlag = printRaces
 
     def generate_randomLowCost(self,tournament):
         '''
@@ -36,7 +36,7 @@ class RaceGenerator():
         '''
         # while at least a player hasn't faced everyone and not all players have same number of races
         while ( not(tournament.playersSameNumberOfRaces()) or (tournament.somebodyDidNotFaceEveryone()) ):
-            race = leastExpensiveRace(tournament.players,self.playersPerRace,tournament.averageNumberOfRaces())
+            race = leastExpensiveRace(tournament.players,self._playersPerRace,tournament.averageNumberOfRaces())
             tournament.addRace(race)
             self.printRace(race)
 
@@ -57,14 +57,14 @@ class RaceGenerator():
             while (len(playersNotFaced) != 0):
                 # if number of playersNotFaced equal to playersPerRace - 1 or more
                     # find combination of (playersPerRace - 1) players, that along with player gives race with least cost
-                if ( len(playersNotFaced) > (self.playersPerRace - 1) ):
-                    race = leastExpensiveRace(playersNotFaced,self.playersPerRace,tournament.averageNumberOfRaces(),[player])
+                if ( len(playersNotFaced) > (self._playersPerRace - 1) ):
+                    race = leastExpensiveRace(playersNotFaced,self._playersPerRace,tournament.averageNumberOfRaces(),[player])
                     tournament.addRace(race)
                     self.printRace(race)
                 # if number of playersNotFaced equal to playersPerRace - 1 
                     # then by adding player I have exactly playersPerRace number of players
                     # so the race is the player with playersNotFaced
-                elif ( len(playersNotFaced) == (self.playersPerRace - 1) ):
+                elif ( len(playersNotFaced) == (self._playersPerRace - 1) ):
                     # append player and add race
                     race = list(playersNotFaced)
                     race.append(player)
@@ -81,11 +81,11 @@ class RaceGenerator():
                     # add at least n players, where n is needed to reach playerPerRace
                         # I actually get least playerPerRace number of players, and then I remove fixedPlayers 
                             # since fixedPlayers could be in playersWithLeastRaces
-                    otherPlayers = atLeastNplayersWithLeastRaces(self.playersPerRace,tournament.getPlayers())
+                    otherPlayers = atLeastNplayersWithLeastRaces(self._playersPerRace,tournament.getPlayers())
                     removeList2fromList1(otherPlayers,fixedPlayers)
                     race = leastExpensiveRace(\
                             otherPlayers,\
-                            self.playersPerRace,\
+                            self._playersPerRace,\
                             tournament.averageNumberOfRaces(),\
                             fixedPlayers)
                     tournament.addRace(race)
@@ -106,18 +106,18 @@ class RaceGenerator():
             # get a random player with least number of races
             player = playerWithLeastRaces(tournament.getPlayers())
             # add least cost race by fixing player, and remaining playersWithLeastRaces
-            otherPlayers = atLeastNplayersWithLeastRaces(self.playersPerRace,tournament.getPlayers())
+            otherPlayers = atLeastNplayersWithLeastRaces(self._playersPerRace,tournament.getPlayers())
             removeList2fromList1(otherPlayers,[player])
             race = leastExpensiveRace(\
                         otherPlayers,\
-                        self.playersPerRace,\
+                        self._playersPerRace,\
                         tournament.averageNumberOfRaces(),\
                         [player])
             tournament.addRace(race)
             self.printRace(race)
        
     def printRace(self,race):
-        if self.printRacesFlag:
+        if self._printRacesFlag:
             print(race)
             
     def generate_randomUntilSameNumberOfRaces(self,tournament):
