@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 ########################################################################
-
+    
 from __future__ import print_function
 
 from .tournament import *
@@ -52,7 +52,7 @@ class RaceGenerator():
         # while at least a player hasn't faced everyone
         while (tournament.somebodyDidNotFaceEveryone()):
             player = tournament.getPlayerThatHasntFacedEveryone()
-            playersNotFaced = player.playersNotFaced(tournament.getPlayers())
+            playersNotFaced = player.playersNotFaced(tournament.players)
             # while still some players to be faced
             while (len(playersNotFaced) != 0):
                 # if number of playersNotFaced equal to playersPerRace - 1 or more
@@ -81,7 +81,7 @@ class RaceGenerator():
                     # add at least n players, where n is needed to reach playerPerRace
                         # I actually get least playerPerRace number of players, and then I remove fixedPlayers 
                             # since fixedPlayers could be in playersWithLeastRaces
-                    otherPlayers = atLeastNplayersWithLeastRaces(self._playersPerRace,tournament.getPlayers())
+                    otherPlayers = atLeastNplayersWithLeastRaces(self._playersPerRace,tournament.players)
                     removeList2fromList1(otherPlayers,fixedPlayers)
                     race = leastExpensiveRace(\
                             otherPlayers,\
@@ -90,7 +90,7 @@ class RaceGenerator():
                             fixedPlayers)
                     tournament.addRace(race)
                     self.printRace(race)
-                playersNotFaced = player.playersNotFaced(tournament.getPlayers())
+                playersNotFaced = player.playersNotFaced(tournament.players)
         # 2) until every player same number of race
         # while ( not(tournament.playersSameNumberOfRaces()) ):
         #    tournament.addRace(leastExpensiveRace(tournament.players,self.playersPerRace,tournament.averageNumberOfRaces()))
@@ -104,9 +104,9 @@ class RaceGenerator():
         # until every player same number of race
         while ( not(tournament.playersSameNumberOfRaces()) ):
             # get a random player with least number of races
-            player = playerWithLeastRaces(tournament.getPlayers())
+            player = playerWithLeastRaces(tournament.players)
             # add least cost race by fixing player, and remaining playersWithLeastRaces
-            otherPlayers = atLeastNplayersWithLeastRaces(self._playersPerRace,tournament.getPlayers())
+            otherPlayers = atLeastNplayersWithLeastRaces(self._playersPerRace,tournament.players)
             removeList2fromList1(otherPlayers,[player])
             race = leastExpensiveRace(\
                         otherPlayers,\

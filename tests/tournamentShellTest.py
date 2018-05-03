@@ -54,7 +54,7 @@ class TournamentShellTest():
         return
 
     def _generateCoherentRaceResult(self,tournament):
-        races = tournament.getRaces()
+        races = tournament.races
         randomRaceIndex = randint(0,len(races)-1)
         # adds race result with players of random race
              # tournament[randomRaceIndex][0] = first player of random race

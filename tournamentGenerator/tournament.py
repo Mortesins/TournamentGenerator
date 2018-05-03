@@ -27,21 +27,21 @@ from .helper import removeList2fromList1, convertRaceResultToRace, sameRace
 class Tournament():
     'Tournament class, containing players and races'
     def __init__(self, players, points=(), pointsFastestLap=1):
-        self.players = players
+        self._players = players
         # contains tuple with points assigned for each position
-        self.points = points
+        self._points = points
         # points assigned for fastest lap of race
-        self.pointsFastestLap = pointsFastestLap
+        self._pointsFastestLap = pointsFastestLap
         # races, which are lists of players in the race
-        self.races = []
+        self._races = []
         # race results which are arrays of (player, time) tuples in the order of arrival
-        self.raceResults = []
+        self._raceResults = []
         # races to do (not played yet)
-        self.racesToDo = []
+        self._racesToDo = []
         # list of players in the order based on points
-        self.standings = list(players)
+        self._standings = list(self._players)
         # list of players in the order based on fastest lap
-        self.standingsFastestLap = []
+        self._standingsFastestLap = []
 
     @classmethod
     def init_WithPlayerGenerator(cls, playerGenerator, points=(), pointsFastestLap=1):
@@ -50,7 +50,7 @@ class Tournament():
     def addRace(self,race):
         # race must be a list or tuple of Player
         if ( (isinstance(race,list) or isinstance(race,tuple)) and isinstance(race[0],Player) ):
-            self.races.append(race)
+            self._races.append(race)
             # increment number of races
             for player in race:
                 player.addRace()
@@ -62,34 +62,55 @@ class Tournament():
             raise TypeError(race + " is not of type Player")
         return
     
-    def getNumberOfPlayers(self):
-        return len(self.players)
+    @property
+    def players(self):
+        return list(self._players)
 
-    def getPlayers(self):
-        return list(self.players)
-        
-    def getRaces(self):
-        return list(self.races)
+    @property
+    def points(self):
+        return self._points
+
+    @property
+    def pointsFastestLap(self):
+        return self._pointsFastestLap
+
+    @property
+    def races(self):
+        return list(self._races)
+
+    @property
+    def raceResults(self):
+        return list(self._raceResults)
+
+    @property
+    def racesToDo(self):
+        self._calculateRacesToDo()
+        return list(self._racesToDo)
+
+    @property
+    def standings(self):
+        return list(self._standings)
+    
+    @property
+    def standingsFastestLap(self):
+        return list(self._standingsFastestLap)
+    
+    def getNumberOfPlayers(self):
+        return len(self._players)
+
 
     def getRace(self,index):
-        return list(self.races[index])
-
-    def getRaceResults(self):
-        return list(self.raceResults)
+        return list(self._races[index])
 
     def getRaceResult(self,index):
-        return list(self.raceResults[index])
-
-    def getRacesToDo(self):
-        self._calculateRacesToDo()
-        return list(self.racesToDo)
+        return list(self._raceResults[index])
 
     def getRaceToDo(self,index):
         self._calculateRacesToDo()
-        return list(self.racesToDo[index])
+        return list(self._racesToDo[index])
 
     def raceExists(self,race):
-        for r in self.races:
+        for r in self._races:
             # check if every player of race is contained in r, if so raceExists
             allRplayersInRace = True
             i = 0
@@ -106,7 +127,7 @@ class Tournament():
     def playersSameNumberOfRaces(self):
         ''' checks if all players of tournament have the same number of races '''
         numberOfRaces = None
-        for player in self.players:
+        for player in self._players:
             # first run, so I store the number of races of first player
             if numberOfRaces == None:
                 numberOfRaces = player.races
@@ -122,26 +143,26 @@ class Tournament():
     
     def somebodyDidNotFaceEveryone(self):
         ''' checks if there is at least a player that hasn't faced every other player '''
-        for player in self.players:
+        for player in self._players:
             # if player has at least a player not faced, then somebodyDidNotFaceEveryone (true)
-            if len(player.playersNotFaced(self.players)) != 0:
+            if len(player.playersNotFaced(self._players)) != 0:
                 return True
         # all players have playersNotFaced list empty, so everyone has faced everyone
         return False
 
     def getPlayerThatHasntFacedEveryone(self):
-        for player in self.players:
+        for player in self._players:
             # if player has at least a player not faced, then return this player
-            if len(player.playersNotFaced(self.players)) != 0:
+            if len(player.playersNotFaced(self._players)) != 0:
                 return player
         # all players have playersNotFaced list empty, so everyone has faced everyone
         return None
 
     def getRandomPlayerThatHasntFacedEveryone(self):
         p = []
-        for player in self.players:
+        for player in self._players:
             # if player has at least a player not faced, then return this player
-            if len(player.playersNotFaced(self.players)) != 0:
+            if len(player.playersNotFaced(self._players)) != 0:
                 p.append(player)
         # random index of players that haven't faced everyone
         if (len(p) != 0):
@@ -152,9 +173,9 @@ class Tournament():
 
     def averageNumberOfRaces(self):
         mean = 0.0
-        for player in self.players:
+        for player in self._players:
             mean += player.races 
-        return mean / len(self.players)
+        return mean / len(self._players)
 
     def costOfRace(self,race):
         return costOfRace(race,self.averageNumberOfRaces())
@@ -178,7 +199,7 @@ class Tournament():
           # give points to each player
             # if there are point for that position
             try:
-                resultsTuple[0].addPoints(self.points[i])
+                resultsTuple[0].addPoints(self._points[i])
             except IndexError:
                 # there are no points for ith position
                 pass
@@ -192,10 +213,10 @@ class Tournament():
             resultsTuple[0].addRaceDone()
           # append (player,time)
             raceResult.append((resultsTuple[0],resultsTuple[2]))
-        self.raceResults.append(raceResult)
+        self._raceResults.append(raceResult)
         # sort race results by fastest lap time, and give player points for fastestLap
         resultsTuples.sort(key=lambda resultsTuple : resultsTuple[2])
-        resultsTuples[0][0].addPoints(self.pointsFastestLap)
+        resultsTuples[0][0].addPoints(self._pointsFastestLap)
 
     def _calculateStandingsFastestLap(self):
         ''' calculates and stores players ordered by fastest lap '''
@@ -203,44 +224,44 @@ class Tournament():
             # copy players to standingsFastestLap
             # remove players without fastestLap
         # sort standingsFastestLap
-        if (len(self.standingsFastestLap) != len(self.players)):
-            self.standingsFastestLap = list(self.players)
+        if (len(self._standingsFastestLap) != len(self._players)):
+            self._standingsFastestLap = list(self._players)
             i = 0
-            while i < len(self.standingsFastestLap):
-                if (self.standingsFastestLap[i].fastestLap == None):
-                    self.standingsFastestLap.pop(i)
+            while i < len(self._standingsFastestLap):
+                if (self._standingsFastestLap[i].fastestLap == None):
+                    self._standingsFastestLap.pop(i)
                 else:
                     i += 1
-        self.standingsFastestLap.sort(key=lambda player : player.fastestLap)
+        self._standingsFastestLap.sort(key=lambda player : player.fastestLap)
 
     def _calculateStandings(self):
         ''' calculates and stores players ordered by points '''
-        self.standings.sort(key=lambda player : player.points,reverse=True)
+        self._standings.sort(key=lambda player : player.points,reverse=True)
 
     def getFastestLapTime(self):
         self._calculateStandingsFastestLap()
-        if (len(self.standingsFastestLap) == 0):
+        if (len(self._standingsFastestLap) == 0):
             return None
         else:
-            return self.standingsFastestLap[0].fastestLap
+            return self._standingsFastestLap[0].fastestLap
 
     def getFastestLapPlayer(self):
         self._calculateStandingsFastestLap()
-        if (len(self.standingsFastestLap) == 0):
+        if (len(self._standingsFastestLap) == 0):
             return None
         else:
-            return self.standingsFastestLap[0]
+            return self._standingsFastestLap[0]
 
     def getFastestLapStanding(self):
         ''' returns [ player, ... ] ordered by fastest lap '''
         self._calculateStandingsFastestLap()
-        return list(self.standingsFastestLap)
+        return list(self._standingsFastestLap)
 
     def getFastestLapStandingPrintable(self):
         ''' returns [ (player name, time), ... ] rdered by fastest lap '''
         self._calculateStandingsFastestLap()
         result = []
-        for player in self.standingsFastestLap:
+        for player in self._standingsFastestLap:
             result.append(\
                 (\
                     player.name,\
@@ -252,13 +273,13 @@ class Tournament():
     def getStandings(self):
         ''' returns [ player, ... ] ordered by points '''
         self._calculateStandings()
-        return list(self.standings)
+        return list(self._standings)
 
     def getStandingsPrintable(self):
         ''' returns [ (player name, number of races, points), ... ] ordered by points '''
         self._calculateStandings()
         result = []
-        for player in self.standings:
+        for player in self._standings:
             result.append(\
                 (\
                     player.name,\
@@ -269,31 +290,31 @@ class Tournament():
         return result
 
     def _calculateRacesToDo(self):
-        if self.racesToDo == []:
+        if self._racesToDo == []:
             # all races, then I remove the ones already done
-            self.racesToDo = list(self.races)
+            self._racesToDo = list(self._races)
         # temporarily store races which will be removed at the end
         racesToRemove = []
         # for each race to do check if present in race results, if so remove it
-        for race in self.racesToDo:
-            for raceResultTmp in self.raceResults:
+        for race in self._racesToDo:
+            for raceResultTmp in self._raceResults:
                 raceResult = convertRaceResultToRace(raceResultTmp)
                 # if raceResult is the same as race, then this race is already done
                     # so I remove it from racesToDo
                 if sameRace(raceResult,race):
                     racesToRemove.append(race)
-        removeList2fromList1(self.racesToDo,racesToRemove)
+        removeList2fromList1(self._racesToDo,racesToRemove)
 
 ### PRINT FUNCTIONS ###
     ### PRINT CHECKS ###
     def printNumberOfRacesOfEachPlayer(self):
-        players = list(self.players)
+        players = list(self._players)
         players.sort(key=lambda player : player.name)
         for player in players:
             player.printNumberOfRaces()
 
     def printPlayersFacedByEachPlayer(self):
-        players = list(self.players)
+        players = list(self._players)
         players.sort(key=lambda player : player.name)
         for player in players:
             player.printPlayersFaced()

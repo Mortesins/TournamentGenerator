@@ -48,7 +48,7 @@ class TournamentTest(unittest.TestCase):
         except TypeError:
             error = True
         self.assertFalse(error)
-        self.assertEqual(a.getRaces(),1)
+        self.assertEqual(a.races,1)
         ###
         a = Player("A")
         b = Player("B")
@@ -58,8 +58,8 @@ class TournamentTest(unittest.TestCase):
         except TypeError:
             error = True
         self.assertFalse(error)
-        self.assertEqual(a.getRaces(),1)
-        self.assertEqual(b.getRaces(),1)
+        self.assertEqual(a.races,1)
+        self.assertEqual(b.races,1)
         self.assertTrue(a.hasFaced(b))
         self.assertTrue(b.hasFaced(a))
         ###
@@ -74,9 +74,9 @@ class TournamentTest(unittest.TestCase):
         except TypeError:
             error = True
         self.assertFalse(error)
-        self.assertEqual(a.getRaces(),3)
-        self.assertEqual(b.getRaces(),2)
-        self.assertEqual(b.getRaces(),2)
+        self.assertEqual(a.races,3)
+        self.assertEqual(b.races,2)
+        self.assertEqual(b.races,2)
         self.assertTrue(a.hasFaced(b))
         self.assertTrue(a.hasFaced(c))
         self.assertTrue(b.hasFaced(a))
@@ -361,14 +361,14 @@ class TournamentTest(unittest.TestCase):
                 (B,time(0,1,22,450000))\
             ]\
         )
-        self.assertEqual(A.getFastestLap(),time(0,1,21,340000))
-        self.assertEqual(B.getFastestLap(),time(0,1,22,450000))
-        self.assertEqual(D.getFastestLap(),time(0,1,23,000000))
-        self.assertEqual(E.getFastestLap(),time(0,1,21,484000))
-        self.assertEqual(A.getPoints(),5) # +1 for fastest lap
-        self.assertEqual(B.getPoints(),1)
-        self.assertEqual(D.getPoints(),2)
-        self.assertEqual(E.getPoints(),3)
+        self.assertEqual(A.fastestLap,time(0,1,21,340000))
+        self.assertEqual(B.fastestLap,time(0,1,22,450000))
+        self.assertEqual(D.fastestLap,time(0,1,23,000000))
+        self.assertEqual(E.fastestLap,time(0,1,21,484000))
+        self.assertEqual(A.points,5) # +1 for fastest lap
+        self.assertEqual(B.points,1)
+        self.assertEqual(D.points,2)
+        self.assertEqual(E.points,3)
 
         tournament.addRaceResult(\
             [\
@@ -388,16 +388,16 @@ class TournamentTest(unittest.TestCase):
                 (D,time(0,1,24,000000))\
             ]\
         )
-        self.assertEqual(A.getFastestLap(),time(0,1,21,300000))
-        self.assertEqual(B.getFastestLap(),time(0,1,21,450000))
-        self.assertEqual(C.getFastestLap(),time(0,1,20,984000))
-        self.assertEqual(D.getFastestLap(),time(0,1,23,000000))
-        self.assertEqual(E.getFastestLap(),time(0,1,21,484000))
-        self.assertEqual(A.getPoints(),8)
-        self.assertEqual(B.getPoints(),3)
-        self.assertEqual(C.getPoints(),5) # +1 for fastest lap
-        self.assertEqual(D.getPoints(),3)
-        self.assertEqual(E.getPoints(),3)
+        self.assertEqual(A.fastestLap,time(0,1,21,300000))
+        self.assertEqual(B.fastestLap,time(0,1,21,450000))
+        self.assertEqual(C.fastestLap,time(0,1,20,984000))
+        self.assertEqual(D.fastestLap,time(0,1,23,000000))
+        self.assertEqual(E.fastestLap,time(0,1,21,484000))
+        self.assertEqual(A.points,8)
+        self.assertEqual(B.points,3)
+        self.assertEqual(C.points,5) # +1 for fastest lap
+        self.assertEqual(D.points,3)
+        self.assertEqual(E.points,3)
 
     def test_addRaceResult_lessPoints(self):
         # 5 players (ABCDE)
@@ -425,14 +425,14 @@ class TournamentTest(unittest.TestCase):
                 (B,time(0,1,22,450000))\
             ]\
         )
-        self.assertEqual(A.getFastestLap(),time(0,1,21,340000))
-        self.assertEqual(B.getFastestLap(),time(0,1,22,450000))
-        self.assertEqual(D.getFastestLap(),time(0,1,23,000000))
-        self.assertEqual(E.getFastestLap(),time(0,1,21,484000))
-        self.assertEqual(A.getPoints(),5) # +1 for fastest lap
-        self.assertEqual(B.getPoints(),0)
-        self.assertEqual(D.getPoints(),2)
-        self.assertEqual(E.getPoints(),3)
+        self.assertEqual(A.fastestLap,time(0,1,21,340000))
+        self.assertEqual(B.fastestLap,time(0,1,22,450000))
+        self.assertEqual(D.fastestLap,time(0,1,23,000000))
+        self.assertEqual(E.fastestLap,time(0,1,21,484000))
+        self.assertEqual(A.points,5) # +1 for fastest lap
+        self.assertEqual(B.points,0)
+        self.assertEqual(D.points,2)
+        self.assertEqual(E.points,3)
 
         tournament.addRaceResult(\
             [\
@@ -452,16 +452,16 @@ class TournamentTest(unittest.TestCase):
                 (D,time(0,1,24,000000))\
             ]\
         )
-        self.assertEqual(A.getFastestLap(),time(0,1,21,300000))
-        self.assertEqual(B.getFastestLap(),time(0,1,21,450000))
-        self.assertEqual(C.getFastestLap(),time(0,1,20,984000))
-        self.assertEqual(D.getFastestLap(),time(0,1,23,000000))
-        self.assertEqual(E.getFastestLap(),time(0,1,21,484000))
-        self.assertEqual(A.getPoints(),8)
-        self.assertEqual(B.getPoints(),2)
-        self.assertEqual(C.getPoints(),5) # +1 for fastest lap
-        self.assertEqual(D.getPoints(),2)
-        self.assertEqual(E.getPoints(),3)
+        self.assertEqual(A.fastestLap,time(0,1,21,300000))
+        self.assertEqual(B.fastestLap,time(0,1,21,450000))
+        self.assertEqual(C.fastestLap,time(0,1,20,984000))
+        self.assertEqual(D.fastestLap,time(0,1,23,000000))
+        self.assertEqual(E.fastestLap,time(0,1,21,484000))
+        self.assertEqual(A.points,8)
+        self.assertEqual(B.points,2)
+        self.assertEqual(C.points,5) # +1 for fastest lap
+        self.assertEqual(D.points,2)
+        self.assertEqual(E.points,3)
 
     def test_addRaceResultMorePoints(self):
         # 5 players (ABCDE)
@@ -489,14 +489,14 @@ class TournamentTest(unittest.TestCase):
                 (B,time(0,1,22,450000))\
             ]\
         )
-        self.assertEqual(A.getFastestLap(),time(0,1,21,340000))
-        self.assertEqual(B.getFastestLap(),time(0,1,22,450000))
-        self.assertEqual(D.getFastestLap(),time(0,1,23,000000))
-        self.assertEqual(E.getFastestLap(),time(0,1,21,484000))
-        self.assertEqual(A.getPoints(),26) # +1 for fastest lap
-        self.assertEqual(B.getPoints(),12)
-        self.assertEqual(D.getPoints(),15)
-        self.assertEqual(E.getPoints(),18)
+        self.assertEqual(A.fastestLap,time(0,1,21,340000))
+        self.assertEqual(B.fastestLap,time(0,1,22,450000))
+        self.assertEqual(D.fastestLap,time(0,1,23,000000))
+        self.assertEqual(E.fastestLap,time(0,1,21,484000))
+        self.assertEqual(A.points,26) # +1 for fastest lap
+        self.assertEqual(B.points,12)
+        self.assertEqual(D.points,15)
+        self.assertEqual(E.points,18)
 
         tournament.addRaceResult(\
             [\
@@ -516,16 +516,16 @@ class TournamentTest(unittest.TestCase):
                 (D,time(0,1,24,000000))\
             ]\
         )
-        self.assertEqual(A.getFastestLap(),time(0,1,21,300000))
-        self.assertEqual(B.getFastestLap(),time(0,1,21,450000))
-        self.assertEqual(C.getFastestLap(),time(0,1,20,984000))
-        self.assertEqual(D.getFastestLap(),time(0,1,23,000000))
-        self.assertEqual(E.getFastestLap(),time(0,1,21,484000))
-        self.assertEqual(A.getPoints(),44)
-        self.assertEqual(B.getPoints(),27)
-        self.assertEqual(C.getPoints(),26) # +1 for fastest lap
-        self.assertEqual(D.getPoints(),27)
-        self.assertEqual(E.getPoints(),18)
+        self.assertEqual(A.fastestLap,time(0,1,21,300000))
+        self.assertEqual(B.fastestLap,time(0,1,21,450000))
+        self.assertEqual(C.fastestLap,time(0,1,20,984000))
+        self.assertEqual(D.fastestLap,time(0,1,23,000000))
+        self.assertEqual(E.fastestLap,time(0,1,21,484000))
+        self.assertEqual(A.points,44)
+        self.assertEqual(B.points,27)
+        self.assertEqual(C.points,26) # +1 for fastest lap
+        self.assertEqual(D.points,27)
+        self.assertEqual(E.points,18)
 
     def test_addRaceResult_differentFastestLapPoint(self):
         # 5 players (ABCDE)
@@ -553,14 +553,14 @@ class TournamentTest(unittest.TestCase):
                 (B,time(0,1,22,450000))\
             ]\
         )
-        self.assertEqual(A.getFastestLap(),time(0,1,21,340000))
-        self.assertEqual(B.getFastestLap(),time(0,1,22,450000))
-        self.assertEqual(D.getFastestLap(),time(0,1,23,000000))
-        self.assertEqual(E.getFastestLap(),time(0,1,21,484000))
-        self.assertEqual(A.getPoints(),6) # +2 for fastest lap
-        self.assertEqual(B.getPoints(),1)
-        self.assertEqual(D.getPoints(),2)
-        self.assertEqual(E.getPoints(),3)
+        self.assertEqual(A.fastestLap,time(0,1,21,340000))
+        self.assertEqual(B.fastestLap,time(0,1,22,450000))
+        self.assertEqual(D.fastestLap,time(0,1,23,000000))
+        self.assertEqual(E.fastestLap,time(0,1,21,484000))
+        self.assertEqual(A.points,6) # +2 for fastest lap
+        self.assertEqual(B.points,1)
+        self.assertEqual(D.points,2)
+        self.assertEqual(E.points,3)
 
         tournament.addRaceResult(\
             [\
@@ -580,16 +580,16 @@ class TournamentTest(unittest.TestCase):
                 (D,time(0,1,24,000000))\
             ]\
         )
-        self.assertEqual(A.getFastestLap(),time(0,1,21,300000))
-        self.assertEqual(B.getFastestLap(),time(0,1,21,450000))
-        self.assertEqual(C.getFastestLap(),time(0,1,20,984000))
-        self.assertEqual(D.getFastestLap(),time(0,1,23,000000))
-        self.assertEqual(E.getFastestLap(),time(0,1,21,484000))
-        self.assertEqual(A.getPoints(),9)
-        self.assertEqual(B.getPoints(),3)
-        self.assertEqual(C.getPoints(),6) # +1 for fastest lap
-        self.assertEqual(D.getPoints(),3)
-        self.assertEqual(E.getPoints(),3)
+        self.assertEqual(A.fastestLap,time(0,1,21,300000))
+        self.assertEqual(B.fastestLap,time(0,1,21,450000))
+        self.assertEqual(C.fastestLap,time(0,1,20,984000))
+        self.assertEqual(D.fastestLap,time(0,1,23,000000))
+        self.assertEqual(E.fastestLap,time(0,1,21,484000))
+        self.assertEqual(A.points,9)
+        self.assertEqual(B.points,3)
+        self.assertEqual(C.points,6) # +1 for fastest lap
+        self.assertEqual(D.points,3)
+        self.assertEqual(E.points,3)
 
 ### HELPER FUNCTION ###
     def generateRaceResult1(self,tournament):
@@ -766,7 +766,7 @@ class TournamentTest(unittest.TestCase):
         tournament.addRace([A,B,D,E])
         
         self.assertEqual(\
-            tournament.getRacesToDo(),\
+            tournament.racesToDo,\
             [\
                 [A,B,C,D],\
                 [A,B,C,E],\
@@ -786,7 +786,7 @@ class TournamentTest(unittest.TestCase):
         )
         
         self.assertEqual(\
-            tournament.getRacesToDo(),\
+            tournament.racesToDo,\
             [\
                 [A,B,C,D],\
                 [A,B,C,E],\
@@ -805,7 +805,7 @@ class TournamentTest(unittest.TestCase):
         )
         
         self.assertEqual(\
-            tournament.getRacesToDo(),\
+            tournament.racesToDo,\
             [\
                 [A,B,C,E],\
                 [B,C,D,E],\
@@ -823,7 +823,7 @@ class TournamentTest(unittest.TestCase):
         )
         
         self.assertEqual(\
-            tournament.getRacesToDo(),\
+            tournament.racesToDo,\
             [\
                 [A,B,C,E],\
                 [A,C,D,E]\
@@ -846,7 +846,7 @@ class TournamentTest(unittest.TestCase):
         tournament.addRace([A,B,D,E])
         
         self.assertEqual(\
-            tournament.getRacesToDo(),\
+            tournament.racesToDo,\
             [\
                 [A,B,C,D],\
                 [A,B,C,E],\
@@ -884,7 +884,7 @@ class TournamentTest(unittest.TestCase):
         )
         
         self.assertEqual(\
-            tournament.getRacesToDo(),\
+            tournament.racesToDo,\
             [\
                 [A,B,C,E],\
                 [A,C,D,E]\

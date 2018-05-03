@@ -130,7 +130,7 @@ class TournamentShell(Cmd):
             while (incorrectNumber):
                 try:
                     raceNumber = int(raceNumberRaw)
-                    if ( (raceNumber > 0) and (raceNumber <= len(self._tournament.getRacesToDo()) ) ):
+                    if ( (raceNumber > 0) and (raceNumber <= len(self._tournament.racesToDo) ) ):
                         raceInserted = self.playRace(raceNumber)
                         # end loop
                         incorrectNumber = False
@@ -149,7 +149,7 @@ class TournamentShell(Cmd):
             p = s.split()
             try:
                 raceNumber = int(p[0])
-                if ( (raceNumber > 0) and (raceNumber <= len(self._tournament.getRacesToDo()) ) ):
+                if ( (raceNumber > 0) and (raceNumber <= len(self._tournament.racesToDo) ) ):
                     raceInserted = self.playRace(raceNumber)
                 else:
                     print("Wrong race number")
@@ -409,12 +409,12 @@ class TournamentShell(Cmd):
         raceGenerator.generate_lowCostForPlayerWithLeastRaces(self._tournament)
         print("Tournament generated")
         if verbose:
-            printRaces(self._tournament.getRaces())
+            printRaces(self._tournament.races)
             self._tournament.printNumberOfRacesOfEachPlayer()
             self._tournament.printPlayersFacedByEachPlayer()
             
     def playRace(self,raceNumber):
-        if ( (raceNumber < 1) and (raceNumber > len(self._tournament.getRacesToDo())) ):
+        if ( (raceNumber < 1) and (raceNumber > len(self._tournament.racesToDo)) ):
             print("Wrong race number")
             return False
         i = raceNumber - 1
@@ -487,15 +487,15 @@ class TournamentShell(Cmd):
 ### PRINT FUNCTIONS ###
     def printRaces(self):
         print("RACES:")
-        printRaces(self._tournament.getRaces())
+        printRaces(self._tournament.races)
 
     def printRacesDone(self):
         print("RACES DONE:")
-        printRaces(convertRaceResultsToRaces(self._tournament.getRaceResults()))
+        printRaces(convertRaceResultsToRaces(self._tournament.raceResults))
 
     def printRacesToDo(self):
         print("RACES TO DO:")
-        printRaces(self._tournament.getRacesToDo())
+        printRaces(self._tournament.racesToDo)
 
     def printPlayers(self):
         print("PLAYERS:")
@@ -512,7 +512,7 @@ class TournamentShell(Cmd):
     def printRaceResults(self):
         print("RACES RESULTS:")
         i = 1
-        for race in self._tournament.getRaceResults():
+        for race in self._tournament.raceResults:
             print("\tRACE"+str(i)+":")
             j = 1
             for result in race:
@@ -528,7 +528,7 @@ class TournamentShell(Cmd):
         standings = self._tournament.getStandingsPrintable()
         # find max length of player name
         maxLength = 0
-        for player in self._tournament.getPlayers():
+        for player in self._tournament.players:
             if (len(player.name) > maxLength):
                 maxLength = len(player.name)
         # if max length name shorter than "PLAYER" than I take "PLAYER" length
@@ -559,7 +559,7 @@ class TournamentShell(Cmd):
         standings = self._tournament.getFastestLapStandingPrintable()
         # find max length of player name
         maxLength = 0
-        for player in self._tournament.getPlayers():
+        for player in self._tournament.players:
             if (len(player.name) > maxLength):
                 maxLength = len(player.name)
         # if max length name shorter than "PLAYER" than I take "PLAYER" length
