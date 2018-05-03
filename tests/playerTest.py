@@ -34,11 +34,11 @@ class PlayerTest(unittest.TestCase):
     def test_addNracesToIthPlayer(self):
         players = self._return10players()
         self._addNracesToIthPlayer(players,0,9)
-        self.assertEqual(players[0].getRaces(),9)
+        self.assertEqual(players[0].races,9)
         self._addNracesToIthPlayer(players,3,9)
-        self.assertEqual(players[3].getRaces(),9)
+        self.assertEqual(players[3].races,9)
         self._addNracesToIthPlayer(players,5,1)
-        self.assertEqual(players[5].getRaces(),1)
+        self.assertEqual(players[5].races,1)
         
 ####################
 ### PLAYER CLASS ###
@@ -153,7 +153,7 @@ class PlayerTest(unittest.TestCase):
         
         playersLeastRaces = playersWithLeastRaces(players)
         self.assertEqual(len(playersLeastRaces),1)
-        self.assertEqual(playersLeastRaces[0].getRaces(),1)
+        self.assertEqual(playersLeastRaces[0].races,1)
      
     def test_playersWithLeastRaces2(self):
         players = self._return10players()
@@ -171,8 +171,8 @@ class PlayerTest(unittest.TestCase):
 
         playersLeastRaces = playersWithLeastRaces(players)
         self.assertEqual(len(playersLeastRaces),2)
-        self.assertEqual(playersLeastRaces[0].getRaces(),2)
-        self.assertEqual(playersLeastRaces[1].getRaces(),2)
+        self.assertEqual(playersLeastRaces[0].races,2)
+        self.assertEqual(playersLeastRaces[1].races,2)
     
     def test_playersWithLeastRaces3(self):
         players = self._return10players()
@@ -190,9 +190,9 @@ class PlayerTest(unittest.TestCase):
 
         playersLeastRaces = playersWithLeastRaces(players)
         self.assertEqual(len(playersLeastRaces),3)
-        self.assertEqual(playersLeastRaces[0].getRaces(),4)
-        self.assertEqual(playersLeastRaces[1].getRaces(),4)
-        self.assertEqual(playersLeastRaces[2].getRaces(),4)
+        self.assertEqual(playersLeastRaces[0].races,4)
+        self.assertEqual(playersLeastRaces[1].races,4)
+        self.assertEqual(playersLeastRaces[2].races,4)
     
     def test_nPlayersWithLeastRaces(self):
         players = self._return10players()
@@ -210,21 +210,21 @@ class PlayerTest(unittest.TestCase):
 
         playersLeastRaces = nPlayersWithLeastRaces(1,players)
         self.assertEqual(len(playersLeastRaces),1)
-        self.assertEqual(playersLeastRaces[0].getRaces(),4)
+        self.assertEqual(playersLeastRaces[0].races,4)
         
         playersLeastRaces = nPlayersWithLeastRaces(3,players)
         self.assertEqual(len(playersLeastRaces),3)
-        self.assertEqual(playersLeastRaces[0].getRaces(),4)
-        self.assertEqual(playersLeastRaces[1].getRaces(),4)
-        self.assertEqual(playersLeastRaces[2].getRaces(),4)
+        self.assertEqual(playersLeastRaces[0].races,4)
+        self.assertEqual(playersLeastRaces[1].races,4)
+        self.assertEqual(playersLeastRaces[2].races,4)
         
         playersLeastRaces = nPlayersWithLeastRaces(5,players)
         self.assertEqual(len(playersLeastRaces),5)
-        self.assertEqual(playersLeastRaces[0].getRaces(),4)
-        self.assertEqual(playersLeastRaces[1].getRaces(),4)
-        self.assertEqual(playersLeastRaces[2].getRaces(),4)
-        self.assertEqual(playersLeastRaces[3].getRaces(),6)
-        self.assertEqual(playersLeastRaces[4].getRaces(),7)
+        self.assertEqual(playersLeastRaces[0].races,4)
+        self.assertEqual(playersLeastRaces[1].races,4)
+        self.assertEqual(playersLeastRaces[2].races,4)
+        self.assertEqual(playersLeastRaces[3].races,6)
+        self.assertEqual(playersLeastRaces[4].races,7)
 
     def test_atLeastNplayersWithLeastRaces(self):
         players = self._return10players()
@@ -242,35 +242,35 @@ class PlayerTest(unittest.TestCase):
 
         playersLeastRaces = atLeastNplayersWithLeastRaces(1,players)
         self.assertEqual(len(playersLeastRaces),3)
-        self.assertEqual(playersLeastRaces[0].getRaces(),4)
-        self.assertEqual(playersLeastRaces[1].getRaces(),4)
-        self.assertEqual(playersLeastRaces[2].getRaces(),4)
+        self.assertEqual(playersLeastRaces[0].races,4)
+        self.assertEqual(playersLeastRaces[1].races,4)
+        self.assertEqual(playersLeastRaces[2].races,4)
         
         playersLeastRaces = atLeastNplayersWithLeastRaces(2,players)
         self.assertEqual(len(playersLeastRaces),3)
-        self.assertEqual(playersLeastRaces[0].getRaces(),4)
-        self.assertEqual(playersLeastRaces[1].getRaces(),4)
-        self.assertEqual(playersLeastRaces[2].getRaces(),4)
+        self.assertEqual(playersLeastRaces[0].races,4)
+        self.assertEqual(playersLeastRaces[1].races,4)
+        self.assertEqual(playersLeastRaces[2].races,4)
         
         playersLeastRaces = atLeastNplayersWithLeastRaces(3,players)
         self.assertEqual(len(playersLeastRaces),3)
-        self.assertEqual(playersLeastRaces[0].getRaces(),4)
-        self.assertEqual(playersLeastRaces[1].getRaces(),4)
-        self.assertEqual(playersLeastRaces[2].getRaces(),4)
+        self.assertEqual(playersLeastRaces[0].races,4)
+        self.assertEqual(playersLeastRaces[1].races,4)
+        self.assertEqual(playersLeastRaces[2].races,4)
         
         playersLeastRaces = atLeastNplayersWithLeastRaces(4,players)
         self.assertEqual(len(playersLeastRaces),4)
-        self.assertEqual(playersLeastRaces[0].getRaces(),4)
-        self.assertEqual(playersLeastRaces[1].getRaces(),4)
-        self.assertEqual(playersLeastRaces[2].getRaces(),4)
-        self.assertEqual(playersLeastRaces[3].getRaces(),6)
+        self.assertEqual(playersLeastRaces[0].races,4)
+        self.assertEqual(playersLeastRaces[1].races,4)
+        self.assertEqual(playersLeastRaces[2].races,4)
+        self.assertEqual(playersLeastRaces[3].races,6)
 
         playersLeastRaces = atLeastNplayersWithLeastRaces(5,players)
         self.assertEqual(len(playersLeastRaces),7)
-        self.assertEqual(playersLeastRaces[0].getRaces(),4)
-        self.assertEqual(playersLeastRaces[1].getRaces(),4)
-        self.assertEqual(playersLeastRaces[2].getRaces(),4)
-        self.assertEqual(playersLeastRaces[3].getRaces(),6)
-        self.assertEqual(playersLeastRaces[4].getRaces(),7)
-        self.assertEqual(playersLeastRaces[5].getRaces(),7)
-        self.assertEqual(playersLeastRaces[6].getRaces(),7)
+        self.assertEqual(playersLeastRaces[0].races,4)
+        self.assertEqual(playersLeastRaces[1].races,4)
+        self.assertEqual(playersLeastRaces[2].races,4)
+        self.assertEqual(playersLeastRaces[3].races,6)
+        self.assertEqual(playersLeastRaces[4].races,7)
+        self.assertEqual(playersLeastRaces[5].races,7)
+        self.assertEqual(playersLeastRaces[6].races,7)

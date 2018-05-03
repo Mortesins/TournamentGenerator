@@ -24,78 +24,87 @@ from .helper import lapTimeToStr
 class Player():
     'Player class'
     def __init__(self, name):
-        self.name = name
-        self.races = 0
-        self.racesDone = 0
-        self.points = 0
-        self.fastestLap = None
-        self.facedPlayers = []
+        self._name = name
+        self._races = 0
+        self._racesDone = 0
+        self._points = 0
+        self._fastestLap = None
+        self._facedPlayers = []
 
     def __repr__(self):
-        return self.name
+        return self._name
 
     def __str__(self):
-        return self.name
+        return self._name
+
+### GETTERS AND SETTERS ###
+    @property
+    def races(self):
+        return self._races
+    
+    @property
+    def facedPlayers(self):
+        return list(self._facedPlayers)
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def racesDone(self):
+        return self._racesDone
+    
+    @property
+    def points(self):
+        return self._points
+    
+    @property
+    def fastestLap(self):
+        return self._fastestLap
+
+    @fastestLap.setter
+    def fastestLap(self, fastestLap):
+        # check fastestLap of type datetime.time
+        if type(fastestLap) is time:
+            self._fastestLap = fastestLap
+###########################
 
     def addRace(self):
-        self.races += 1
+        self._races += 1
         return
 
     def addFacedPlayer(self, player):
-        self.facedPlayers.append(player)
+        self._facedPlayers.append(player)
         return
 
-    def getRaces(self):
-        return self.races
-
-    def getFacedPlayers(self):
-        return self.facedPlayers
-
-    def getName(self):
-        return self.name
-
     def addRaceDone(self):
-        self.racesDone += 1
+        self._racesDone += 1
         return
 
     def addPoints(self,points):
-        if (points >= 0):
-            self.points += points
-
-    def setFastestLap(self, fastestLap):
-        # check fastestLap of type datetime.time
-        if type(fastestLap) is time:
-            self.fastestLap = fastestLap
-
-    def getRacesDone(self):
-        return self.racesDone
-
-    def getPoints(self):
-        return self.points
-
-    def getFastestLap(self):
-        return self.fastestLap
+        if (type(points) == int and points >= 0):
+            self._points += points
 
     def getFastestLapPrintable(self):
-        if self.fastestLap == None:
+        if self._fastestLap == None:
             return "None"
-        return lapTimeToStr(self.fastestLap)
+        return lapTimeToStr(self._fastestLap)
 
     def hasFaced(self, player):
-        for p in self.facedPlayers:
+        for p in self._facedPlayers:
             if p == player:
                 return True
         return False
 
     def numberOfTimesAlreadyFaced(self, player):
         n = 0
-        for p in self.facedPlayers:
+        for p in self._facedPlayers:
             if (p == player):
                 n += 1
         return n
 
     def numberPlayersFaced(self):
-        return len(self.facedPlayers)
+        return len(self._facedPlayers)
 
     def playersNotFaced(self, allPlayers):
         listPlayersNotFaced = []
@@ -103,6 +112,22 @@ class Player():
             if not self.hasFaced(player) and self != player:
                 listPlayersNotFaced.append(player)
         return listPlayersNotFaced
+
+### PRINT FUNCTIONS ###
+    def printNumberOfRaces(self):
+        print(str(self) + ":" + str(self._races))
+    
+    def printPlayersFaced(self):
+        stringFacedPlayers = "["
+        facedPlayers = list(self._facedPlayers)
+        facedPlayers.sort(key=lambda player : player.name)
+        for facedPlayer in facedPlayers:
+            stringFacedPlayers += ( str(facedPlayer) + "," )
+        # eliminate last comma
+        stringFacedPlayers = stringFacedPlayers[:-1]
+        stringFacedPlayers += "]"
+        print(str(self) + ":" + stringFacedPlayers)
+#######################
 
 
 def playersFaceEachOther(player1, player2):
@@ -115,15 +140,15 @@ def playersWithLeastRaces(players):
     ''' given list of players, returns list of players with less races '''
     # find least amount of races
     plr = []
-    minRaces = players[0].getRaces()
+    minRaces = players[0].races
     plr.append(players[0])
     i = 1
     while (i < len(players)):
-        if players[i].getRaces() < minRaces:
-            minRaces = players[i].getRaces()
+        if players[i].races < minRaces:
+            minRaces = players[i].races
             plr = []
             plr.append(players[i])
-        elif players[i].getRaces() == minRaces:
+        elif players[i].races == minRaces:
             plr.append(players[i])
         i += 1
     return plr
@@ -135,7 +160,7 @@ def playerWithLeastRaces(players):
 
 def nPlayersWithLeastRaces(n, players):
     ''' given list of players, returns n players with the least races '''
-    players.sort(key=lambda player : player.getRaces())
+    players.sort(key=lambda player : player.races)
     return players[:n]
 
 def atLeastNplayersWithLeastRaces(n, players):
@@ -145,9 +170,9 @@ def atLeastNplayersWithLeastRaces(n, players):
         EXAMPLE: # 4,4,4,6,7,7,7,8,8,9
             if n is 5, then it will return 4,4,4,6,7 plus all other with 7 races, so 4,4,4,6,7,7,7
     '''
-    players.sort(key=lambda player : player.getRaces())
+    players.sort(key=lambda player : player.races)
     # number of races of the nth player
-    racesNthPlayer = players[n-1].getRaces()
+    racesNthPlayer = players[n-1].races
     # get other players with same number of races
         # find index (starting from n) at which the player has more races than the nth player
     i = n
@@ -155,7 +180,7 @@ def atLeastNplayersWithLeastRaces(n, players):
     while (i < len(players) and (not indexFound)):
         # if ith player has different number of races, than return players from 0 to i-1
             # because i-1 is the last index which had racesNthPlayer
-        if (players[i].getRaces() != racesNthPlayer):
+        if (players[i].races != racesNthPlayer):
             indexFound = True
         else: # so I don't increment i when I find it
             i += 1

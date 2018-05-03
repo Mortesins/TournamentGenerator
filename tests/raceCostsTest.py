@@ -20,12 +20,13 @@ import unittest
 from tournamentGenerator.raceCosts import *
 
 from tournamentGenerator.tournament import *
+from tournamentGenerator.randomPlayerGenerator import RandomPlayerGenerator
 from random import shuffle
 
 class RaceCostsTest(unittest.TestCase):
     def test_leastExpensiveRaces_fixedPlayer(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5))
         A = tournament.players[0]
         B = tournament.players[1]
         C = tournament.players[2]
@@ -58,7 +59,7 @@ class RaceCostsTest(unittest.TestCase):
         self.assertEqual(len(leastExpensiveRaces(players,3,tournament.averageNumberOfRaces(),[E])),3)
       # 4 players per race
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5))
         A = tournament.players[0]
         B = tournament.players[1]
         C = tournament.players[2]
@@ -76,7 +77,7 @@ class RaceCostsTest(unittest.TestCase):
         players.remove(B) # because I fix B
         self.assertEqual(len(leastExpensiveRaces(players,4,tournament.averageNumberOfRaces(),[A,B])),3)
         # 6 players (ABCDEF)
-        tournament = Tournament.init_GeneratePlayers(6)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(6))
         A = tournament.players[0]
         B = tournament.players[1]
         C = tournament.players[2]
@@ -99,7 +100,7 @@ class RaceCostsTest(unittest.TestCase):
 
     def test_leastExpensiveRaces_noFixedPlayer(self):
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5))
         A = tournament.players[0]
         B = tournament.players[1]
         C = tournament.players[2]
@@ -114,7 +115,7 @@ class RaceCostsTest(unittest.TestCase):
         self.assertEqual(len(leastExpensiveRaces(tournament.players,3,tournament.averageNumberOfRaces())),3)
       # 4 players per race
         # 5 players (ABCDE)
-        tournament = Tournament.init_GeneratePlayers(5)
+        tournament = Tournament.init_WithPlayerGenerator(RandomPlayerGenerator(5))
         A = tournament.players[0]
         B = tournament.players[1]
         C = tournament.players[2]
